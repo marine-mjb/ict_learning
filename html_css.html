@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML & CSS | ICT Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:   #050d1a;
+      --panel:  #0d1e30;
+      --border: rgba(0,212,255,0.15);
+      --cyan:   #00d4ff;
+      --green:  #34d399;
+      --red:    #f87171;
+      --gold:   #f59e0b;
+      --text:   #e2eaf4;
+      --muted:  #6b8aaa;
+      --card:   rgba(13,30,48,0.9);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: var(--navy);
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(110px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:480px; height:480px; background: rgba(0,212,255,0.07); top:-100px; left:-80px; }
+    .orb-2 { width:360px; height:360px; background: rgba(52,211,153,0.05); bottom:-60px; right:-60px; animation-delay:-7s; }
+
+    @keyframes drift {
+      from { transform: translate(0,0); }
+      to   { transform: translate(25px,18px); }
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── back button ── */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid var(--border);
+      color: var(--cyan);
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1.8rem;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .back-btn:hover { background: var(--cyan); color: var(--navy); }
+
+    /* ── page header ── */
+    .page-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.2rem 2.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+    .page-header-inner { display:flex; align-items:center; gap:1.4rem; }
+    .header-icon {
+      width:64px; height:64px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.25);
+      border-radius: 16px;
+      display:flex; align-items:center; justify-content:center;
+      font-size: 2rem; flex-shrink:0;
+    }
+    .header-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .page-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      letter-spacing: 2px;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .page-header p { font-size:0.9rem; color:var(--muted); }
+
+    /* ── lesson cards ── */
+    .lesson-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.8rem 2rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+    .lesson-card::before {
+      content:'';
+      position:absolute;
+      left:0; top:0; bottom:0; width:3px;
+      background: linear-gradient(180deg, var(--cyan), #4facfe);
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .lesson-card:nth-child(1){ animation-delay:.05s }
+    .lesson-card:nth-child(2){ animation-delay:.12s }
+    .lesson-card:nth-child(3){ animation-delay:.19s }
+    .lesson-card:nth-child(4){ animation-delay:.26s }
+
+    .lesson-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1.5px;
+      color: #fff;
+      margin-bottom: 0.8rem;
+    }
+    .lesson-card-title span {
+      background: rgba(0,212,255,0.1);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.6rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+    }
+
+    .lesson-card p {
+      font-size: 0.93rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    /* ── tip boxes ── */
+    .tip-box {
+      background: rgba(0,212,255,0.06);
+      border: 1px solid rgba(0,212,255,0.18);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.85rem;
+      color: var(--cyan);
+      line-height: 1.6;
+      margin-top: 0.5rem;
+    }
+    .tip-box strong { color: #fff; }
+
+    .tip-gold {
+      background: rgba(245,158,11,0.07);
+      border-color: rgba(245,158,11,0.2);
+      color: #fcd34d;
+    }
+    .tip-green {
+      background: rgba(52,211,153,0.07);
+      border-color: rgba(52,211,153,0.2);
+      color: #6ee7b7;
+    }
+
+    /* ── code block ── */
+    .code-block {
+      background: #050d1a;
+      border: 1px solid rgba(0,212,255,0.12);
+      color: #a5f3fc;
+      padding: 1.1rem 1.3rem;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin: 0.8rem 0;
+    }
+    .code-block .tag   { color: #38bdf8; }
+    .code-block .attr  { color: #818cf8; }
+    .code-block .val   { color: #34d399; }
+    .code-block .cmnt  { color: #475569; font-style:italic; }
+
+    /* ── tag pills ── */
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    .tag-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid var(--border);
+      color: var(--cyan);
+      padding: 0.25rem 0.7rem;
+      border-radius: 5px;
+    }
+
+    /* ── divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0 1.5rem;
+    }
+    .divider-line { flex:1; height:1px; background: var(--border); }
+    .divider-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: var(--cyan);
+    }
+
+    /* ── quiz ── */
+    .quiz-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 0.3s both;
+    }
+    .quiz-wrap::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .score-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--cyan);
+      background: rgba(0,212,255,0.08);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+    }
+
+    /* progress bar */
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      height: 4px;
+      margin-bottom: 1.8rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), #4facfe);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* question card */
+    .question-card {
+      background: rgba(5,13,26,0.6);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 1.6rem;
+    }
+    .question-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
+
+    .options-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .option:hover:not(.locked) {
+      background: rgba(0,212,255,0.07);
+      border-color: rgba(0,212,255,0.3);
+      color: #fff;
+    }
+    .option-letter {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+    .option.correct {
+      background: rgba(52,211,153,0.1);
+      border-color: rgba(52,211,153,0.4);
+      color: var(--green);
+    }
+    .option.correct .option-letter {
+      background: rgba(52,211,153,0.2);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .option.incorrect {
+      background: rgba(248,113,113,0.08);
+      border-color: rgba(248,113,113,0.3);
+      color: var(--red);
+    }
+    .option.incorrect .option-letter {
+      background: rgba(248,113,113,0.15);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .option.locked { cursor: default; }
+
+    .feedback {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); color: var(--green); }
+    .feedback.incorrect { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); color: var(--red); }
+
+    /* next button */
+    .next-btn {
+      margin-top: 1.4rem;
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--cyan);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .next-btn:hover {
+      background: var(--cyan);
+      color: var(--navy);
+      box-shadow: 0 0 22px rgba(0,212,255,0.3);
+    }
+    .next-btn.visible { display: block; }
+
+    /* results */
+    .result-card {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .result-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .result-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .result-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--cyan);
+      margin-bottom: 0.5rem;
+    }
+    .result-msg { color: var(--muted); font-size:0.95rem; margin-bottom: 2rem; }
+
+    .result-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .result-btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+    .result-btn.primary { background: var(--cyan); color: var(--navy); border-color: var(--cyan); }
+    .result-btn.primary:hover { box-shadow: 0 0 22px rgba(0,212,255,0.4); }
+    .result-btn.secondary { background: transparent; color: var(--text); }
+    .result-btn.secondary:hover { background: rgba(255,255,255,0.06); }
+
+    @media (max-width: 600px) {
+      body { padding: 1.2rem 1rem; }
+      .page-header { padding: 1.5rem; }
+      .page-header h1 { font-size: 2rem; }
+      .lesson-card { padding: 1.4rem 1.5rem; }
+      .quiz-wrap { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="page-wrap">
+
+  <!-- BACK -->
+  <button class="back-btn" onclick="location.href='index.html'">← Back to Dashboard</button>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="header-icon">🌐</div>
+      <div>
+        <div class="header-eyebrow">// Track 01 · Beginner</div>
+        <h1>HTML & CSS Fundamentals</h1>
+        <p>Build beautiful, responsive websites from scratch</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LESSON 1 -->
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>📖</span> What is HTML?</div>
+    <p>HTML — HyperText Markup Language — is the skeleton of every webpage. It uses <em>tags</em> to define elements like headings, paragraphs, links, and images. Browsers read these tags and render them visually for the user.</p>
+    <div class="code-block">
+<span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+  <span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title&gt;</span>My Page<span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;/head&gt;</span>
+  <span class="tag">&lt;body&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>Hello, World!<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>This is a paragraph.<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span>
+    </div>
+    <div class="tip-box">
+      💡 <strong>Pro tip:</strong> Every HTML document must start with <code>&lt;!DOCTYPE html&gt;</code>. This tells the browser which version of HTML you're using (HTML5 in modern web development).
+    </div>
+    <div class="tag-row">
+      <span class="tag-pill">&lt;html&gt;</span>
+      <span class="tag-pill">&lt;head&gt;</span>
+      <span class="tag-pill">&lt;body&gt;</span>
+      <span class="tag-pill">&lt;h1&gt;–&lt;h6&gt;</span>
+      <span class="tag-pill">&lt;p&gt;</span>
+    </div>
+  </div>
+
+  <!-- LESSON 2 -->
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🎨</span> What is CSS?</div>
+    <p>CSS — Cascading Style Sheets — is what makes websites look great. While HTML handles structure, CSS handles visual presentation: colors, fonts, spacing, layout, and animations. You can apply CSS in three ways: inline, internal, or external.</p>
+    <div class="code-block">
+<span class="cmnt">/* External CSS (best practice) */</span>
+<span class="tag">h1</span> {
+  <span class="attr">color</span>: <span class="val">#00d4ff</span>;
+  <span class="attr">font-size</span>: <span class="val">2rem</span>;
+  <span class="attr">font-family</span>: <span class="val">'Arial', sans-serif</span>;
+}
+
+<span class="tag">p</span> {
+  <span class="attr">color</span>: <span class="val">#334155</span>;
+  <span class="attr">line-height</span>: <span class="val">1.6</span>;
+  <span class="attr">margin-bottom</span>: <span class="val">1rem</span>;
+}
+    </div>
+    <div class="tip-box tip-green">
+      ✅ <strong>Best practice:</strong> Always keep your CSS in a separate <code>.css</code> file and link it with <code>&lt;link rel="stylesheet" href="styles.css"&gt;</code> in your HTML head. This keeps code clean and maintainable.
+    </div>
+  </div>
+
+  <!-- LESSON 3 -->
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>📦</span> The Box Model</div>
+    <p>Every HTML element is a rectangular box. The CSS Box Model describes the space around it: <strong>content</strong> (what's inside), <strong>padding</strong> (space inside the border), <strong>border</strong> (the edge), and <strong>margin</strong> (space outside the border).</p>
+    <div class="code-block">
+<span class="tag">.card</span> {
+  <span class="attr">width</span>: <span class="val">300px</span>;
+  <span class="attr">padding</span>: <span class="val">20px</span>;       <span class="cmnt">/* inside space */</span>
+  <span class="attr">border</span>: <span class="val">2px solid #00d4ff</span>;
+  <span class="attr">margin</span>: <span class="val">16px</span>;        <span class="cmnt">/* outside space */</span>
+  <span class="attr">border-radius</span>: <span class="val">12px</span>; <span class="cmnt">/* rounded corners */</span>
+}
+    </div>
+    <div class="tip-box tip-gold">
+      ⚠️ <strong>Common mistake:</strong> By default, <code>width</code> doesn't include padding or border. Add <code>box-sizing: border-box</code> to your CSS so widths are predictable and include all spacing.
+    </div>
+  </div>
+
+  <!-- LESSON 4 -->
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>📐</span> Flexbox & Grid</div>
+    <p>Modern CSS layout uses <strong>Flexbox</strong> for one-dimensional layouts (rows or columns) and <strong>CSS Grid</strong> for two-dimensional layouts. These replaced old float-based layouts and make responsive design much easier.</p>
+    <div class="code-block">
+<span class="cmnt">/* Flexbox: center items horizontally & vertically */</span>
+<span class="tag">.container</span> {
+  <span class="attr">display</span>: <span class="val">flex</span>;
+  <span class="attr">justify-content</span>: <span class="val">center</span>;
+  <span class="attr">align-items</span>: <span class="val">center</span>;
+  <span class="attr">gap</span>: <span class="val">1rem</span>;
+}
+
+<span class="cmnt">/* Grid: 3-column equal layout */</span>
+<span class="tag">.grid</span> {
+  <span class="attr">display</span>: <span class="val">grid</span>;
+  <span class="attr">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>;
+  <span class="attr">gap</span>: <span class="val">20px</span>;
+}
+    </div>
+    <div class="tip-box">
+      💡 <strong>Remember:</strong> Flexbox is great for navigation bars, card rows, and centering. Grid shines for full page layouts and gallery-style arrangements. Use both together!
+    </div>
+  </div>
+
+  <!-- QUIZ DIVIDER -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-label">🏆 Quiz Time</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-wrap">
+    <div class="quiz-meta">
+      <span class="quiz-label">// Knowledge Check</span>
+      <span class="score-badge" id="scoreBadge">Score: 0 / 10</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div id="quizContainer"></div>
+    <button class="next-btn" id="nextBtn">Next Question →</button>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+  const questions = [
+    {
+      text: "What does HTML stand for?",
+      options: ["Hyper Text Markup Language","High Tech Modern Link","Home Tool Markup Language","Hyper Transfer Markup Language"],
+      correct: 0,
+      explanation: "HTML stands for HyperText Markup Language. It is the standard language for creating web pages."
+    },
+    {
+      text: "Which CSS property changes the text color?",
+      options: ["text-color","font-color","color","bg-color"],
+      correct: 2,
+      explanation: "The 'color' property sets the foreground color of an element's text. 'background-color' sets the background."
+    },
+    {
+      text: "What is the correct HTML tag for the largest heading?",
+      options: ["&lt;head&gt;","&lt;h6&gt;","&lt;heading&gt;","&lt;h1&gt;"],
+      correct: 3,
+      explanation: "Headings range from &lt;h1&gt; (largest, most important) to &lt;h6&gt; (smallest). Use only one &lt;h1&gt; per page for SEO."
+    },
+    {
+      text: "Which CSS property adds space INSIDE an element's border?",
+      options: ["margin","padding","border-spacing","gap"],
+      correct: 1,
+      explanation: "Padding adds space between the element's content and its border. Margin adds space outside the border."
+    },
+    {
+      text: "What does CSS stand for?",
+      options: ["Creative Style Sheets","Computer Style Sheets","Cascading Style Sheets","Colorful Style Sheets"],
+      correct: 2,
+      explanation: "'Cascading' means styles flow from parent to child elements and rules have specificity-based priority."
+    },
+    {
+      text: "Which HTML tag is used to insert an image?",
+      options: ["&lt;image&gt;","&lt;img&gt;","&lt;picture&gt;","&lt;src&gt;"],
+      correct: 1,
+      explanation: "&lt;img&gt; is a self-closing tag. Use 'src' for the image path and 'alt' for accessibility: &lt;img src='photo.jpg' alt='description'&gt;."
+    },
+    {
+      text: "Which CSS value for 'display' enables Flexbox?",
+      options: ["block","flex-box","inline","flex"],
+      correct: 3,
+      explanation: "Setting 'display: flex' on a container turns its direct children into flex items, enabling powerful one-dimensional layouts."
+    },
+    {
+      text: "Which HTML attribute links a stylesheet to an HTML page?",
+      options: ["href","src","rel","link"],
+      correct: 0,
+      explanation: "The &lt;link&gt; tag uses 'href' to point to the CSS file: &lt;link rel='stylesheet' href='styles.css'&gt;."
+    },
+    {
+      text: "In CSS, what unit represents a percentage of the viewport's width?",
+      options: ["px","em","vw","rem"],
+      correct: 2,
+      explanation: "'vw' stands for viewport width. '100vw' is the full browser window width. 'vh' does the same for height."
+    },
+    {
+      text: "Which CSS property controls the stacking order of overlapping elements?",
+      options: ["z-index","layer","stack-order","depth"],
+      correct: 0,
+      explanation: "z-index works on positioned elements (position: relative/absolute/fixed). Higher values appear on top. Default is 'auto'."
+    }
+  ];
+
+  let currentQ = 0, score = 0, answered = false;
+  const total = questions.length;
+
+  function renderQuestion() {
+    const q = questions[currentQ];
+    const progress = (currentQ / total) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+
+    let optHTML = '';
+    q.options.forEach((opt, i) => {
+      optHTML += `
+        <div class="option" data-opt="${i}">
+          <span class="option-letter">${String.fromCharCode(65+i)}</span>
+          ${opt}
+        </div>`;
+    });
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="question-card">
+        <div class="question-num">Question ${currentQ+1} of ${total}</div>
+        <div class="question-text">${q.text}</div>
+        <div class="options-list">${optHTML}</div>
+        <div id="feedback" class="feedback"></div>
+      </div>`;
+
+    document.getElementById('nextBtn').classList.remove('visible');
+
+    document.querySelectorAll('.option').forEach(opt => {
+      opt.addEventListener('click', () => selectOption(parseInt(opt.dataset.opt)));
+    });
+  }
+
+  function selectOption(idx) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    const isCorrect = idx === q.correct;
+    if (isCorrect) score++;
+
+    document.querySelectorAll('.option').forEach((el, i) => {
+      el.classList.add('locked');
+      if (i === q.correct) el.classList.add('correct');
+      if (i === idx && !isCorrect) el.classList.add('incorrect');
+    });
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+    fb.innerHTML = (isCorrect ? '✅ Correct! ' : '❌ Not quite. ') + q.explanation;
+
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+    document.getElementById('nextBtn').classList.add('visible');
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (!answered) return;
+    currentQ++;
+    answered = false;
+    if (currentQ < total) {
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  });
+
+  function showResults() {
+    document.getElementById('progressBar').style.width = '100%';
+    const pct = Math.round((score / total) * 100);
+    let emoji, msg;
+    if (pct >= 90)      { emoji = '🏆'; msg = "Outstanding! You've mastered the basics of HTML & CSS."; }
+    else if (pct >= 70) { emoji = '🎉'; msg = "Great work! A quick review of the lesson will make you perfect."; }
+    else if (pct >= 50) { emoji = '👍'; msg = "Good effort! Re-read the lesson cards above and try again."; }
+    else                { emoji = '📚'; msg = "No worries — review the material above and give it another shot!"; }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="result-card">
+        <div class="result-emoji">${emoji}</div>
+        <div class="result-title">Quiz Complete!</div>
+        <div class="result-score">${score} / ${total} correct &mdash; ${pct}%</div>
+        <p class="result-msg">${msg}</p>
+        <div class="result-actions">
+          <button class="result-btn primary" onclick="location.reload()">🔄 Try Again</button>
+          <button class="result-btn secondary" onclick="location.href='index.html'">🏠 Dashboard</button>
+        </div>
+      </div>`;
+    document.getElementById('nextBtn').classList.remove('visible');
+    document.getElementById('scoreBadge').textContent = `Final: ${score} / ${total}`;
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>

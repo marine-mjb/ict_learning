@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cybersecurity 101 | ICT Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:   #050d1a;
+      --panel:  #0d1e30;
+      --border: rgba(220, 38, 38, 0.3);
+      --red:    #ef4444;
+      --cyan:   #00d4ff;
+      --green:  #34d399;
+      --gold:   #f59e0b;
+      --text:   #e2eaf4;
+      --muted:  #6b8aaa;
+      --card:   rgba(13,30,48,0.92);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: #050d1a;
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(239,68,68,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(239,68,68,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(110px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:480px; height:480px; background: rgba(239,68,68,0.07); top:-100px; left:-80px; }
+    .orb-2 { width:360px; height:360px; background: rgba(0,212,255,0.05); bottom:-60px; right:-60px; animation-delay:-7s; }
+
+    @keyframes drift {
+      from { transform: translate(0,0); }
+      to   { transform: translate(25px,18px); }
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid var(--border);
+      color: #f87171;
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1.8rem;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .back-btn:hover { background: #ef4444; color: var(--navy); border-color: #ef4444; }
+
+    .page-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.2rem 2.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, #ef4444, transparent);
+    }
+    .page-header-inner { display:flex; align-items:center; gap:1.4rem; }
+    .header-icon {
+      width:64px; height:64px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 16px;
+      display:flex; align-items:center; justify-content:center;
+      font-size: 2rem; flex-shrink:0;
+    }
+    .header-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: #f87171;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .page-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      letter-spacing: 2px;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .page-header p { font-size:0.9rem; color:var(--muted); }
+
+    .lesson-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.8rem 2rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+    .lesson-card::before {
+      content:'';
+      position:absolute;
+      left:0; top:0; bottom:0; width:3px;
+      background: linear-gradient(180deg, #ef4444, #f97316);
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .lesson-card:nth-child(1){ animation-delay:.05s }
+    .lesson-card:nth-child(2){ animation-delay:.12s }
+    .lesson-card:nth-child(3){ animation-delay:.19s }
+    .lesson-card:nth-child(4){ animation-delay:.26s }
+
+    .lesson-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1.5px;
+      color: #fff;
+      margin-bottom: 0.8rem;
+    }
+    .lesson-card-title span {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.6rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+    }
+
+    .lesson-card p {
+      font-size: 0.93rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .tip-box {
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.18);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.85rem;
+      color: #fca5a5;
+      line-height: 1.6;
+      margin-top: 0.5rem;
+    }
+    .tip-box strong { color: #fff; }
+
+    .tip-gold {
+      background: rgba(245,158,11,0.07);
+      border-color: rgba(245,158,11,0.2);
+      color: #fcd34d;
+    }
+    .tip-green {
+      background: rgba(52,211,153,0.07);
+      border-color: rgba(52,211,153,0.2);
+      color: #6ee7b7;
+    }
+    .tip-cyan {
+      background: rgba(0,212,255,0.07);
+      border-color: rgba(0,212,255,0.2);
+      color: #67e8f9;
+    }
+
+    .code-block {
+      background: #050d1a;
+      border: 1px solid rgba(239,68,68,0.12);
+      color: #e9d5ff;
+      padding: 1.1rem 1.3rem;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin: 0.8rem 0;
+    }
+    .code-block .keyword { color: #fca5a5; }
+    .code-block .function { color: #67e8f9; }
+    .code-block .string { color: #34d399; }
+    .code-block .comment { color: #475569; font-style:italic; }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    .tag-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid var(--border);
+      color: #fca5a5;
+      padding: 0.25rem 0.7rem;
+      border-radius: 5px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0 1.5rem;
+    }
+    .divider-line { flex:1; height:1px; background: var(--border); }
+    .divider-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: #f87171;
+    }
+
+    .quiz-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 0.3s both;
+    }
+    .quiz-wrap::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .score-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #f87171;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+    }
+
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      height: 4px;
+      margin-bottom: 1.8rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ef4444, #f97316);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .question-card {
+      background: rgba(5,13,26,0.6);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 1.6rem;
+    }
+    .question-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
+
+    .options-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .option:hover:not(.locked) {
+      background: rgba(239,68,68,0.07);
+      border-color: rgba(239,68,68,0.3);
+      color: #fff;
+    }
+    .option-letter {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+    .option.correct {
+      background: rgba(52,211,153,0.1);
+      border-color: rgba(52,211,153,0.4);
+      color: var(--green);
+    }
+    .option.correct .option-letter {
+      background: rgba(52,211,153,0.2);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .option.incorrect {
+      background: rgba(248,113,113,0.08);
+      border-color: rgba(248,113,113,0.3);
+      color: var(--red);
+    }
+    .option.incorrect .option-letter {
+      background: rgba(248,113,113,0.15);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .option.locked { cursor: default; }
+
+    .feedback {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); color: var(--green); }
+    .feedback.incorrect { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); color: var(--red); }
+
+    .next-btn {
+      margin-top: 1.4rem;
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #f87171;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .next-btn:hover {
+      background: #ef4444;
+      color: var(--navy);
+      box-shadow: 0 0 22px rgba(239,68,68,0.3);
+    }
+    .next-btn.visible { display: block; }
+
+    .result-card {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .result-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .result-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .result-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: #f87171;
+      margin-bottom: 0.5rem;
+    }
+    .result-msg { color: var(--muted); font-size:0.95rem; margin-bottom: 2rem; }
+
+    .result-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .result-btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+    .result-btn.primary { background: #ef4444; color: var(--navy); border-color: #ef4444; }
+    .result-btn.primary:hover { box-shadow: 0 0 22px rgba(239,68,68,0.4); }
+    .result-btn.secondary { background: transparent; color: var(--text); }
+    .result-btn.secondary:hover { background: rgba(255,255,255,0.06); }
+
+    @media (max-width: 600px) {
+      body { padding: 1.2rem 1rem; }
+      .page-header { padding: 1.5rem; }
+      .page-header h1 { font-size: 2rem; }
+      .lesson-card { padding: 1.4rem 1.5rem; }
+      .quiz-wrap { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="page-wrap">
+
+  <button class="back-btn" onclick="location.href='index.html'">← Back to Dashboard</button>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="header-icon">🔐</div>
+      <div>
+        <div class="header-eyebrow">// Track 04 · Digital Defense</div>
+        <h1>Cybersecurity 101</h1>
+        <p>Protect systems, networks, and data from digital threats</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🛡️</span> What is Cybersecurity?</div>
+    <p>Cybersecurity is the practice of protecting computers, servers, mobile devices, electronic systems, networks, and data from malicious attacks. It's also known as information technology security. Every organization from banks to hospitals depends on strong cybersecurity.</p>
+    <div class="code-block">
+<span class="comment"># Core security principles - CIA Triad</span>
+<span class="keyword">Confidentiality</span> → Only authorized access
+<span class="keyword">Integrity</span>     → Data is accurate and unaltered
+<span class="keyword">Availability</span>  → Systems accessible when needed
+    </div>
+    <div class="tip-box">
+      💡 <strong>Pro tip:</strong> Always think "CIA" — Confidentiality, Integrity, Availability. These three principles form the foundation of every security strategy!
+    </div>
+    <div class="tag-row">
+      <span class="tag-pill">CIA Triad</span>
+      <span class="tag-pill">threat landscape</span>
+      <span class="tag-pill">risk management</span>
+      <span class="tag-pill">compliance</span>
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🎣</span> Common Threats</div>
+    <p>Phishing uses fake emails/websites to steal credentials. Malware includes viruses, ransomware, and spyware. Man-in-the-middle attacks intercept communications. Denial-of-service floods systems with traffic. Stay vigilant!</p>
+    <div class="code-block">
+<span class="comment"># Red flags in suspicious emails</span>
+• Urgent language: <span class="string">"Your account will be closed!"</span>
+• Generic greetings like <span class="string">"Dear User"</span>
+• Mismatched URLs (hover before clicking)
+• Unexpected attachments or links
+    </div>
+    <div class="tip-box tip-green">
+      ✅ <strong>Best practice:</strong> Never click links in unexpected emails. Type the website URL directly into your browser instead.
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🔑</span> Strong Authentication</div>
+    <p>Use long, unique passwords (12+ characters) with mix of uppercase, lowercase, numbers, and symbols. Enable 2FA/MFA everywhere possible. Password managers help generate and store complex passwords securely.</p>
+    <div class="code-block">
+<span class="comment"># Password strength examples</span>
+❌ Weak:  password123, qwerty, 123456
+✅ Strong: C8!mP$9#vLq@2wR
+✅ Better: Correct-Horse-Battery-Staple (passphrase)
+
+<span class="comment"># Always enable 2FA when available</span>
+Something you KNOW (password) + Something you HAVE (phone)
+    </div>
+    <div class="tip-box tip-cyan">
+      🚀 <strong>2FA tip:</strong> Use authenticator apps (Google Authenticator, Authy) instead of SMS when possible — they're more secure!
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🔒</span> Encryption & HTTPS</div>
+    <p>Encryption scrambles data so only authorized parties can read it. HTTPS (HTTP Secure) encrypts communication between your browser and websites. Look for the padlock icon in your address bar!</p>
+    <div class="code-block">
+<span class="comment"># How HTTPS protects you</span>
+Browser ←→ [ENCRYPTED TUNNEL] ←→ Website
+    Data stays private even if intercepted
+    Padlock ✅ = secure connection
+    
+<span class="comment"># Always check before entering passwords</span>
+<span class="string">https://</span>yourbank.com  ✅ (secure)
+http://yourbank.com     ❌ (unencrypted)
+    </div>
+    <div class="tip-box tip-gold">
+      ⚡ <strong>Security habit:</strong> Never enter sensitive information on websites without HTTPS. Install browser extensions like HTTPS Everywhere for extra protection.
+    </div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-label">🏆 Quiz Time</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-meta">
+      <span class="quiz-label">// Knowledge Check</span>
+      <span class="score-badge" id="scoreBadge">Score: 0 / 10</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div id="quizContainer"></div>
+    <button class="next-btn" id="nextBtn">Next Question →</button>
+  </div>
+
+</div>
+
+<script>
+  // ===================== 10 CYBERSECURITY QUESTIONS =====================
+  const questions = [
+    {
+      text: "What is phishing?",
+      options: ["Fishing for compliments online", "A hacking method using fake emails/websites", "Type of antivirus software", "Encryption algorithm for emails"],
+      correct: 1,
+      explanation: "Phishing tricks users into revealing sensitive data via fraudulent communications that appear legitimate."
+    },
+    {
+      text: "What does HTTPS stand for?",
+      options: ["Hyper Text Transfer Protocol Secure", "High Transfer Text Protocol", "Hyper Text Transfer Public", "HTTP Secure Token"],
+      correct: 0,
+      explanation: "HTTPS encrypts data between browser and server, protecting against eavesdropping and tampering."
+    },
+    {
+      text: "Which of these is a strong password?",
+      options: ["123456", "password", "P@ssw0rd!2024", "qwerty123"],
+      correct: 2,
+      explanation: "P@ssw0rd!2024 uses uppercase, lowercase, numbers, symbols, and is long enough — much stronger than common weak passwords."
+    },
+    {
+      text: "What is a firewall?",
+      options: ["Physical wall in data centers", "Network security system monitoring traffic", "Type of computer virus", "Password management tool"],
+      correct: 1,
+      explanation: "A firewall monitors and controls incoming/outgoing network traffic based on security rules."
+    },
+    {
+      text: "What is 2FA?",
+      options: ["Two-Factor Authentication", "Double File Access", "Two File Archive", "Digital Signature Algorithm"],
+      correct: 0,
+      explanation: "2FA requires two verification methods (password + code from phone) making accounts much harder to compromise."
+    },
+    {
+      text: "What does the 'C' in CIA Triad stand for?",
+      options: ["Confidentiality", "Complexity", "Compliance", "Certification"],
+      correct: 0,
+      explanation: "Confidentiality ensures data is accessible only to authorized users — a core security principle."
+    },
+    {
+      text: "Which of these is a type of malware?",
+      options: ["Firewall", "Ransomware", "HTTPS", "2FA"],
+      correct: 1,
+      explanation: "Ransomware is malware that encrypts files and demands payment for decryption."
+    },
+    {
+      text: "What should you do if you receive a suspicious email from your 'bank'?",
+      options: ["Click the link to check your account", "Reply asking for verification", "Contact your bank directly using official website/phone", "Forward it to friends"],
+      correct: 2,
+      explanation: "Always contact the organization through official channels — never use links or numbers from suspicious emails."
+    },
+    {
+      text: "What is a VPN primarily used for?",
+      options: ["Faster internet speeds", "Encrypting internet connection and hiding IP address", "Installing antivirus", "Managing passwords"],
+      correct: 1,
+      explanation: "A VPN creates an encrypted tunnel for your traffic, protecting privacy on public Wi-Fi and masking your location."
+    },
+    {
+      text: "Which is the safest way to store many complex passwords?",
+      options: ["Write them in a notebook", "Save in browser without master password", "Use a password manager with strong master password", "Use same password everywhere"],
+      correct: 2,
+      explanation: "Password managers generate and store unique strong passwords, encrypted with a master password you remember."
+    }
+  ];
+
+  let currentQ = 0, score = 0, answered = false;
+  const total = questions.length;
+
+  function renderQuestion() {
+    const q = questions[currentQ];
+    const progress = (currentQ / total) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+
+    let optHTML = '';
+    for (let i = 0; i < q.options.length; i++) {
+      const letter = String.fromCharCode(65 + i);
+      optHTML += `
+        <div class="option" data-opt="${i}">
+          <span class="option-letter">${letter}</span>
+          ${escapeHtml(q.options[i])}
+        </div>`;
+    }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="question-card">
+        <div class="question-num">Question ${currentQ + 1} of ${total}</div>
+        <div class="question-text">${escapeHtml(q.text)}</div>
+        <div class="options-list">${optHTML}</div>
+        <div id="feedback" class="feedback"></div>
+      </div>`;
+
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.remove('visible');
+    answered = false;
+
+    const options = document.querySelectorAll('.option');
+    for (let i = 0; i < options.length; i++) {
+      options[i].onclick = null;
+      options[i].onclick = function(e) {
+        e.stopPropagation();
+        const idx = parseInt(this.getAttribute('data-opt'));
+        selectOption(idx);
+      };
+    }
+  }
+
+  function selectOption(selectedIdx) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    const isCorrect = (selectedIdx === q.correct);
+    
+    if (isCorrect) score++;
+
+    const allOptions = document.querySelectorAll('.option');
+    for (let i = 0; i < allOptions.length; i++) {
+      allOptions[i].classList.add('locked');
+      if (i === q.correct) allOptions[i].classList.add('correct');
+      if (i === selectedIdx && !isCorrect) allOptions[i].classList.add('incorrect');
+    }
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+    if (isCorrect) {
+      fb.innerHTML = '✅ Correct! ' + q.explanation;
+    } else {
+      const correctLetter = String.fromCharCode(65 + q.correct);
+      fb.innerHTML = '❌ Not quite. The correct answer is ' + correctLetter + '. ' + q.explanation;
+    }
+
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.add('visible');
+  }
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.onclick = function() {
+    if (!answered) return;
+    currentQ++;
+    if (currentQ < total) {
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  };
+
+  function showResults() {
+    document.getElementById('progressBar').style.width = '100%';
+    const pct = Math.round((score / total) * 100);
+    let emoji, msg;
+    
+    if (pct >= 90) { 
+      emoji = '🛡️🏆'; 
+      msg = "Security Champion! You're ready to protect digital assets like a pro!"; 
+    } else if (pct >= 70) { 
+      emoji = '🔒✨'; 
+      msg = "Great foundation! Keep practicing safe habits and stay updated on threats."; 
+    } else if (pct >= 50) { 
+      emoji = '👍📖'; 
+      msg = "Good start! Review the security cards above and try again to strengthen your knowledge."; 
+    } else { 
+      emoji = '🌱🔐'; 
+      msg = "Cybersecurity is a journey — review the material and practice safe online habits daily!"; 
+    }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="result-card">
+        <div class="result-emoji">${emoji}</div>
+        <div class="result-title">Quiz Complete!</div>
+        <div class="result-score">${score} / ${total} correct — ${pct}%</div>
+        <p class="result-msg">${msg}</p>
+        <div class="result-actions">
+          <button class="result-btn primary" onclick="location.reload()">🔄 Try Again</button>
+          <button class="result-btn secondary" onclick="location.href='index.html'">🏠 Dashboard</button>
+        </div>
+      </div>`;
+    
+    const nextBtnElem = document.getElementById('nextBtn');
+    nextBtnElem.classList.remove('visible');
+    document.getElementById('scoreBadge').textContent = `Final: ${score} / ${total}`;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>

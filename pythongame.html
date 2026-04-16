@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python · Solve the Code</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #050d1a;
+      font-family: 'DM Sans', sans-serif;
+      color: #e2eaf4;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(0,212,255,0.15);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, #fff, #00d4ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .back-btn {
+      background: rgba(0,212,255,0.1);
+      border: 1px solid #00d4ff;
+      border-radius: 40px;
+      padding: 0.5rem 1.3rem;
+      color: #00d4ff;
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: #00d4ff;
+      color: #050d1a;
+    }
+    .game-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .code-section, .output-section {
+      background: rgba(13,30,48,0.85);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 20px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      background: rgba(0,212,255,0.2);
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    textarea {
+      width: 100%;
+      height: 350px;
+      background: #0a1424;
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 12px;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #e2eaf4;
+      resize: vertical;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #00d4ff;
+    }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .run-btn {
+      background: linear-gradient(135deg, #00d4ff, #0068ff);
+      border: none;
+      border-radius: 10px;
+      padding: 0.7rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+    }
+    .hint-btn {
+      background: rgba(245,158,11,0.2);
+      border: 1px solid #f59e0b;
+      border-radius: 10px;
+      padding: 0.7rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #f59e0b;
+      cursor: pointer;
+    }
+    .giveup-btn {
+      background: rgba(255,107,107,0.2);
+      border: 1px solid #ff6b6b;
+      border-radius: 10px;
+      padding: 0.7rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ff6b6b;
+      cursor: pointer;
+    }
+    .new-btn {
+      background: transparent;
+      border: 1px solid #00d4ff;
+      border-radius: 10px;
+      padding: 0.7rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #00d4ff;
+      cursor: pointer;
+    }
+    .output {
+      background: #0a1424;
+      border-radius: 12px;
+      padding: 1rem;
+      min-height: 350px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .error { color: #ff6b6b; }
+    .success { color: #51cf66; }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #0d1e30;
+      border: 1px solid #00d4ff;
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 500px;
+      margin: 1rem;
+      text-align: center;
+    }
+    .modal-content button {
+      margin-top: 1rem;
+      padding: 0.5rem 1.5rem;
+      background: #00d4ff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .game-panel { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="topbar">
+    <div class="logo">🐍 PYTHON · DEBUG ARENA</div>
+    <a href="solvinggame.html" class="back-btn">← Change Language</a>
+  </div>
+  <div class="game-panel">
+    <div class="code-section">
+      <div class="section-title"><span>🐍 FIX THE CODE</span><span class="badge">easy mode</span></div>
+      <textarea id="codeEditor" spellcheck="false"></textarea>
+      <div class="button-group">
+        <button class="run-btn" id="runButton">▶ RUN CODE</button>
+        <button class="hint-btn" id="hintButton">💡 HINT</button>
+        <button class="giveup-btn" id="giveupButton">🏳️ GIVE UP</button>
+        <button class="new-btn" id="newButton">🎲 NEW</button>
+      </div>
+    </div>
+    <div class="output-section">
+      <div class="section-title"><span>📟 OUTPUT</span><span class="badge">result</span></div>
+      <div class="output" id="outputArea">// Click RUN to test your code</div>
+    </div>
+  </div>
+</div>
+
+<div id="hintModal" class="modal">
+  <div class="modal-content">
+    <h3>💡 HINT</h3>
+    <p id="hintMessage"></p>
+    <button onclick="closeModal()">Got it!</button>
+  </div>
+</div>
+
+<div id="answerModal" class="modal">
+  <div class="modal-content">
+    <h3>📖 SOLUTION</h3>
+    <p id="answerMessage"></p>
+    <button onclick="closeAnswerModal()">Try Next →</button>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // PYTHON CHALLENGES - Now with working validation!
+  // ============================================================
+  const challenges = [
+    {
+      broken: `# Bug: Missing colon after if statement
+age = 18
+if age == 18
+    print("You are 18")`,
+      fixed: `age = 18
+if age == 18:
+    print("You are 18")`,
+      hint: "🔍 In Python, every 'if', 'for', 'while' needs a colon : at the end of the line.",
+      expectedOutput: "You are 18",
+      validation: (code) => {
+        return code.includes('if age == 18:') && code.includes('print("You are 18")');
+      }
+    },
+    {
+      broken: `# Bug: Indentation error (missing spaces)
+def greet():
+print("Hello World!")
+greet()`,
+      fixed: `def greet():
+    print("Hello World!")
+greet()`,
+      hint: "⚠️ Python uses indentation (spaces) to know what's inside a function. Add 4 spaces before print.",
+      expectedOutput: "Hello World!",
+      validation: (code) => {
+        return code.includes('def greet():') && code.includes('    print("Hello World!")') && code.includes('greet()');
+      }
+    },
+    {
+      broken: `# Bug: Using = instead of == in if
+score = 10
+if score = 10:
+    print("Perfect score!")`,
+      fixed: `score = 10
+if score == 10:
+    print("Perfect score!")`,
+      hint: "💡 = is assignment, == is comparison. Use == to check equality in conditions.",
+      expectedOutput: "Perfect score!",
+      validation: (code) => {
+        return code.includes('if score == 10:') && !code.includes('if score = 10:');
+      }
+    },
+    {
+      broken: `# Bug: Misspelled variable name
+user_name = "Alex"
+print("Hello " + usr_name)`,
+      fixed: `user_name = "Alex"
+print("Hello " + user_name)`,
+      hint: "✏️ Variable 'usr_name' is not defined. Check spelling: it should be 'user_name'",
+      expectedOutput: "Hello Alex",
+      validation: (code) => {
+        return code.includes('user_name') && code.includes('print("Hello " + user_name)') && !code.includes('usr_name');
+      }
+    },
+    {
+      broken: `# Bug: Missing parentheses on print
+print "Hello Python"`,
+      fixed: `print("Hello Python")`,
+      hint: "🧩 In Python 3, print is a function and needs parentheses: print('text')",
+      expectedOutput: "Hello Python",
+      validation: (code) => {
+        return code.includes('print("Hello Python")') && !code.includes('print "Hello Python"');
+      }
+    },
+    {
+      broken: `# Bug: For loop missing colon
+for i in range(3)
+    print(i)`,
+      fixed: `for i in range(3):
+    print(i)`,
+      hint: "🔄 For loop needs a colon : at the end. Also check indentation inside the loop.",
+      expectedOutput: "0\n1\n2",
+      validation: (code) => {
+        return code.includes('for i in range(3):') && code.includes('    print(i)');
+      }
+    },
+    {
+      broken: `# Bug: Indentation inside while loop
+count = 0
+while count < 3:
+print(count)
+count = count + 1`,
+      fixed: `count = 0
+while count < 3:
+    print(count)
+    count = count + 1`,
+      hint: "📐 The print and count increment must be indented (4 spaces) inside the while loop.",
+      expectedOutput: "0\n1\n2",
+      validation: (code) => {
+        return code.includes('while count < 3:') && code.includes('    print(count)') && code.includes('    count = count + 1');
+      }
+    },
+    {
+      broken: `# Bug: String and int concatenation
+age = 25
+print("I am " + age + " years old")`,
+      fixed: `age = 25
+print("I am " + str(age) + " years old")`,
+      hint: "⚠️ Can't combine string and int with +. Convert int to string using str(age).",
+      expectedOutput: "I am 25 years old",
+      validation: (code) => {
+        return code.includes('str(age)') || code.includes('f"I am {age} years old"');
+      }
+    },
+    {
+      broken: `# Bug: Undefined function
+def say_hello():
+    print("Hi!")
+say_hell()`,
+      fixed: `def say_hello():
+    print("Hi!")
+say_hello()`,
+      hint: "🔍 Function name 'say_hell' is not defined. Check spelling: it should be 'say_hello()'",
+      expectedOutput: "Hi!",
+      validation: (code) => {
+        return code.includes('say_hello()') && !code.includes('say_hell()');
+      }
+    },
+    {
+      broken: `# Bug: Missing closing quote
+message = "Hello World
+print(message)`,
+      fixed: `message = "Hello World"
+print(message)`,
+      hint: "🔤 String missing closing double quote. Add \" at the end of 'Hello World'",
+      expectedOutput: "Hello World",
+      validation: (code) => {
+        return code.includes('"Hello World"') && code.match(/".*"/g)?.length >= 1;
+      }
+    }
+  ];
+
+  let currentChallenge = null;
+
+  function loadNewChallenge() {
+    const randomIndex = Math.floor(Math.random() * challenges.length);
+    currentChallenge = challenges[randomIndex];
+    document.getElementById('codeEditor').value = currentChallenge.broken;
+    document.getElementById('outputArea').innerHTML = '// New challenge! Fix the Python bug and click RUN';
+  }
+
+  function runCode() {
+    if (!currentChallenge) {
+      loadNewChallenge();
+      return;
+    }
+    
+    const code = document.getElementById('codeEditor').value;
+    const outputDiv = document.getElementById('outputArea');
+    
+    // Check if the code has been fixed correctly
+    const isCorrect = currentChallenge.validation(code);
+    
+    // Also check if the code would produce the expected output by simulating
+    let simulatedOutput = "";
+    let simulationError = null;
+    
+    try {
+      // Simple simulation of the Python code
+      if (code.includes('print("You are 18")') && code.includes('if age == 18:')) {
+        simulatedOutput = "You are 18";
+      } else if (code.includes('print("Hello World!")') && code.includes('    print')) {
+        simulatedOutput = "Hello World!";
+      } else if (code.includes('print("Perfect score!")') && code.includes('if score == 10:')) {
+        simulatedOutput = "Perfect score!";
+      } else if (code.includes('print("Hello " + user_name)') && code.includes('user_name')) {
+        simulatedOutput = "Hello Alex";
+      } else if (code.includes('print("Hello Python")')) {
+        simulatedOutput = "Hello Python";
+      } else if (code.includes('print(i)') && code.includes('for i in range(3):')) {
+        simulatedOutput = "0\n1\n2";
+      } else if (code.includes('print(count)') && code.includes('count = count + 1')) {
+        simulatedOutput = "0\n1\n2";
+      } else if (code.includes('str(age)') || code.includes('f"I am {age} years old"')) {
+        simulatedOutput = "I am 25 years old";
+      } else if (code.includes('say_hello()') && !code.includes('say_hell()')) {
+        simulatedOutput = "Hi!";
+      } else if (code.includes('"Hello World"')) {
+        simulatedOutput = "Hello World";
+      }
+    } catch (err) {
+      simulationError = err.message;
+    }
+    
+    if (isCorrect && simulatedOutput === currentChallenge.expectedOutput) {
+      outputDiv.innerHTML = `<span class="success">✅ PERFECT! 🎉 You fixed the Python bug!</span>\n\n📤 Your output:\n${simulatedOutput}\n\n<span class="success">Great job! Click NEW for another challenge.</span>`;
+    } else if (isCorrect) {
+      outputDiv.innerHTML = `<span>📤 Your Output:</span>\n${simulatedOutput || '(no output)'}\n\n<span style="color: #f59e0b;">❌ Not quite right.</span>\n<span>🎯 Expected:</span>\n${currentChallenge.expectedOutput}\n\n💡 Your code structure looks better but check the output!`;
+    } else {
+      // Check what specific error they have
+      let helpfulError = "";
+      if (currentChallenge.broken.includes('if age == 18') && !code.includes('if age == 18:')) {
+        helpfulError = "Missing colon after the if statement! Add ':' at the end of line 2.";
+      } else if (currentChallenge.broken.includes('def greet():') && !code.includes('    print')) {
+        helpfulError = "Missing indentation! The print statement needs 4 spaces before it.";
+      } else if (currentChallenge.broken.includes('if score = 10') && code.includes('if score = 10')) {
+        helpfulError = "Using single = instead of ==. Use '==' for comparison!";
+      } else if (currentChallenge.broken.includes('usr_name') && code.includes('usr_name')) {
+        helpfulError = "Variable 'usr_name' is misspelled. It should be 'user_name'!";
+      } else if (currentChallenge.broken.includes('print"Hello Python"') && code.includes('print "Hello Python"')) {
+        helpfulError = "Missing parentheses! Use print('Hello Python') instead.";
+      } else if (currentChallenge.broken.includes('for i in range(3)') && !code.includes('for i in range(3):')) {
+        helpfulError = "Missing colon after the for loop! Add ':' at the end.";
+      } else if (currentChallenge.broken.includes('while count < 3:') && !code.includes('    print(count)')) {
+        helpfulError = "Missing indentation inside the while loop! Add 4 spaces before print and count increment.";
+      } else if (currentChallenge.broken.includes('"I am " + age') && !code.includes('str(age)')) {
+        helpfulError = "Can't concatenate string and integer! Use str(age) to convert to string.";
+      } else if (currentChallenge.broken.includes('say_hell()') && code.includes('say_hell()')) {
+        helpfulError = "Function name typo! It should be 'say_hello()', not 'say_hell()'.";
+      } else if (currentChallenge.broken.includes('"Hello World') && !code.includes('"Hello World"')) {
+        helpfulError = "Missing closing quote! Add \" at the end of the string.";
+      } else {
+        helpfulError = "The code still has errors. Check the hint for help!";
+      }
+      
+      outputDiv.innerHTML = `<span class="error">❌ Still has bugs!</span>\n\n${helpfulError}\n\n<span>🎯 Expected output:</span>\n${currentChallenge.expectedOutput}\n\n💡 Click HINT for help!`;
+    }
+  }
+
+  function showHint() {
+    if (currentChallenge) {
+      document.getElementById('hintMessage').innerHTML = currentChallenge.hint;
+      document.getElementById('hintModal').style.display = 'flex';
+    }
+  }
+
+  function giveUp() {
+    if (currentChallenge) {
+      document.getElementById('answerMessage').innerHTML = `<strong>✅ The correct fixed Python code:</strong><br><br><code style="background:#1a2a3a; padding:0.5rem; display:block; border-radius:8px; text-align:left; white-space:pre-wrap;">${escapeHtml(currentChallenge.fixed)}</code><br><br><strong>Expected output:</strong><br>${currentChallenge.expectedOutput}<br><br>Study the fix and try the next challenge!`;
+      document.getElementById('answerModal').style.display = 'flex';
+    }
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/\n/g, '<br>');
+  }
+
+  function closeModal() {
+    document.getElementById('hintModal').style.display = 'none';
+  }
+
+  function closeAnswerModal() {
+    document.getElementById('answerModal').style.display = 'none';
+    loadNewChallenge();
+  }
+
+  // Set up event listeners
+  function setupEventListeners() {
+    const runBtn = document.getElementById('runButton');
+    const hintBtn = document.getElementById('hintButton');
+    const giveupBtn = document.getElementById('giveupButton');
+    const newBtn = document.getElementById('newButton');
+    
+    if (runBtn) {
+      const newRunBtn = runBtn.cloneNode(true);
+      runBtn.parentNode.replaceChild(newRunBtn, runBtn);
+      newRunBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        runCode();
+      });
+    }
+    
+    if (hintBtn) {
+      const newHintBtn = hintBtn.cloneNode(true);
+      hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
+      newHintBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showHint();
+      });
+    }
+    
+    if (giveupBtn) {
+      const newGiveupBtn = giveupBtn.cloneNode(true);
+      giveupBtn.parentNode.replaceChild(newGiveupBtn, giveupBtn);
+      newGiveupBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        giveUp();
+      });
+    }
+    
+    if (newBtn) {
+      const newNewBtn = newBtn.cloneNode(true);
+      newBtn.parentNode.replaceChild(newNewBtn, newBtn);
+      newNewBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        loadNewChallenge();
+      });
+    }
+  }
+
+  // Initialize
+  window.addEventListener('DOMContentLoaded', () => {
+    loadNewChallenge();
+    setupEventListeners();
+  });
+  
+  window.runCode = runCode;
+  window.showHint = showHint;
+  window.giveUp = giveUp;
+  window.loadNewChallenge = loadNewChallenge;
+  window.closeModal = closeModal;
+  window.closeAnswerModal = closeAnswerModal;
+</script>
+</body>
+</html>

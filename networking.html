@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Networking Core | ICT Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:   #050d1a;
+      --panel:  #0d1e30;
+      --border: rgba(8, 145, 178, 0.35);
+      --cyan:   #06b6d4;
+      --teal:   #14b8a6;
+      --green:  #34d399;
+      --red:    #f87171;
+      --gold:   #f59e0b;
+      --text:   #e2eaf4;
+      --muted:  #6b8aaa;
+      --card:   rgba(13,30,48,0.92);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: #050d1a;
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(110px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:480px; height:480px; background: rgba(6,182,212,0.07); top:-100px; left:-80px; }
+    .orb-2 { width:360px; height:360px; background: rgba(20,184,166,0.05); bottom:-60px; right:-60px; animation-delay:-7s; }
+
+    @keyframes drift {
+      from { transform: translate(0,0); }
+      to   { transform: translate(25px,18px); }
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(6,182,212,0.08);
+      border: 1px solid var(--border);
+      color: #22d3ee;
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1.8rem;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .back-btn:hover { background: #06b6d4; color: var(--navy); border-color: #06b6d4; }
+
+    .page-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.2rem 2.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+    }
+    .page-header-inner { display:flex; align-items:center; gap:1.4rem; }
+    .header-icon {
+      width:64px; height:64px;
+      background: rgba(6,182,212,0.1);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 16px;
+      display:flex; align-items:center; justify-content:center;
+      font-size: 2rem; flex-shrink:0;
+    }
+    .header-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: #22d3ee;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .page-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      letter-spacing: 2px;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .page-header p { font-size:0.9rem; color:var(--muted); }
+
+    .lesson-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.8rem 2rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+    .lesson-card::before {
+      content:'';
+      position:absolute;
+      left:0; top:0; bottom:0; width:3px;
+      background: linear-gradient(180deg, #06b6d4, #14b8a6);
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .lesson-card:nth-child(1){ animation-delay:.05s }
+    .lesson-card:nth-child(2){ animation-delay:.12s }
+    .lesson-card:nth-child(3){ animation-delay:.19s }
+    .lesson-card:nth-child(4){ animation-delay:.26s }
+
+    .lesson-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1.5px;
+      color: #fff;
+      margin-bottom: 0.8rem;
+    }
+    .lesson-card-title span {
+      background: rgba(6,182,212,0.1);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.6rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+    }
+
+    .lesson-card p {
+      font-size: 0.93rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .tip-box {
+      background: rgba(6,182,212,0.06);
+      border: 1px solid rgba(6,182,212,0.18);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.85rem;
+      color: #67e8f9;
+      line-height: 1.6;
+      margin-top: 0.5rem;
+    }
+    .tip-box strong { color: #fff; }
+
+    .tip-gold {
+      background: rgba(245,158,11,0.07);
+      border-color: rgba(245,158,11,0.2);
+      color: #fcd34d;
+    }
+    .tip-green {
+      background: rgba(52,211,153,0.07);
+      border-color: rgba(52,211,153,0.2);
+      color: #6ee7b7;
+    }
+    .tip-cyan {
+      background: rgba(6,182,212,0.07);
+      border-color: rgba(6,182,212,0.2);
+      color: #67e8f9;
+    }
+
+    .code-block {
+      background: #050d1a;
+      border: 1px solid rgba(6,182,212,0.12);
+      color: #e9d5ff;
+      padding: 1.1rem 1.3rem;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin: 0.8rem 0;
+    }
+    .code-block .keyword { color: #67e8f9; }
+    .code-block .function { color: #22d3ee; }
+    .code-block .string { color: #34d399; }
+    .code-block .comment { color: #475569; font-style:italic; }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    .tag-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      background: rgba(6,182,212,0.08);
+      border: 1px solid var(--border);
+      color: #67e8f9;
+      padding: 0.25rem 0.7rem;
+      border-radius: 5px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0 1.5rem;
+    }
+    .divider-line { flex:1; height:1px; background: var(--border); }
+    .divider-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: #22d3ee;
+    }
+
+    .quiz-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 0.3s both;
+    }
+    .quiz-wrap::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .score-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #22d3ee;
+      background: rgba(6,182,212,0.08);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+    }
+
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      height: 4px;
+      margin-bottom: 1.8rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #06b6d4, #14b8a6);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .question-card {
+      background: rgba(5,13,26,0.6);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 1.6rem;
+    }
+    .question-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
+
+    .options-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .option:hover:not(.locked) {
+      background: rgba(6,182,212,0.07);
+      border-color: rgba(6,182,212,0.3);
+      color: #fff;
+    }
+    .option-letter {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+    .option.correct {
+      background: rgba(52,211,153,0.1);
+      border-color: rgba(52,211,153,0.4);
+      color: var(--green);
+    }
+    .option.correct .option-letter {
+      background: rgba(52,211,153,0.2);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .option.incorrect {
+      background: rgba(248,113,113,0.08);
+      border-color: rgba(248,113,113,0.3);
+      color: var(--red);
+    }
+    .option.incorrect .option-letter {
+      background: rgba(248,113,113,0.15);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .option.locked { cursor: default; }
+
+    .feedback {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); color: var(--green); }
+    .feedback.incorrect { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); color: var(--red); }
+
+    .next-btn {
+      margin-top: 1.4rem;
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #22d3ee;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .next-btn:hover {
+      background: #06b6d4;
+      color: var(--navy);
+      box-shadow: 0 0 22px rgba(6,182,212,0.3);
+    }
+    .next-btn.visible { display: block; }
+
+    .result-card {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .result-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .result-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .result-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: #22d3ee;
+      margin-bottom: 0.5rem;
+    }
+    .result-msg { color: var(--muted); font-size:0.95rem; margin-bottom: 2rem; }
+
+    .result-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .result-btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+    .result-btn.primary { background: #06b6d4; color: var(--navy); border-color: #06b6d4; }
+    .result-btn.primary:hover { box-shadow: 0 0 22px rgba(6,182,212,0.4); }
+    .result-btn.secondary { background: transparent; color: var(--text); }
+    .result-btn.secondary:hover { background: rgba(255,255,255,0.06); }
+
+    @media (max-width: 600px) {
+      body { padding: 1.2rem 1rem; }
+      .page-header { padding: 1.5rem; }
+      .page-header h1 { font-size: 2rem; }
+      .lesson-card { padding: 1.4rem 1.5rem; }
+      .quiz-wrap { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="page-wrap">
+
+  <button class="back-btn" onclick="location.href='index.html'">← Back to Dashboard</button>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="header-icon">📡</div>
+      <div>
+        <div class="header-eyebrow">// Track 05 · Network Fundamentals</div>
+        <h1>Networking Core</h1>
+        <p>IP addresses, DNS, protocols, and how the internet really works</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🌐</span> IP Addresses & Subnetting</div>
+    <p>Every device on a network needs a unique IP address. IPv4 (like 192.168.1.1) uses 32 bits, IPv6 (like 2001:db8::1) uses 128 bits. Subnet masks separate network and host portions, enabling efficient routing.</p>
+    <div class="code-block">
+<span class="comment"># IPv4 Address Classes</span>
+Class A: 1.0.0.0 - 126.255.255.255  (large networks)
+Class B: 128.0.0.0 - 191.255.255.255 (medium networks)
+Class C: 192.0.0.0 - 223.255.255.255 (small networks)
+
+<span class="comment"># Private IP ranges (not routable on internet)</span>
+10.0.0.0/8    → 10.0.0.0 - 10.255.255.255
+172.16.0.0/12 → 172.16.0.0 - 172.31.255.255
+192.168.0.0/16 → 192.168.0.0 - 192.168.255.255
+    </div>
+    <div class="tip-box">
+      💡 <strong>Pro tip:</strong> Use `ipconfig` (Windows) or `ifconfig` (Linux/Mac) to see your device's IP address. 127.0.0.1 is "localhost" — your own computer!
+    </div>
+    <div class="tag-row">
+      <span class="tag-pill">IPv4/IPv6</span>
+      <span class="tag-pill">subnet mask</span>
+      <span class="tag-pill">NAT</span>
+      <span class="tag-pill">DHCP</span>
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🔍</span> DNS: The Phonebook of Internet</div>
+    <p>DNS (Domain Name System) translates human-friendly domain names (google.com) into IP addresses (142.250.190.46). Without DNS, we'd have to memorize number strings for every website!</p>
+    <div class="code-block">
+<span class="comment"># DNS lookup process</span>
+1. Browser checks cache → 2. OS checks hosts file
+3. DNS resolver query → 4. Root nameserver
+5. TLD nameserver (.com) → 6. Authoritative nameserver
+7. IP returned → 8. Browser connects
+
+<span class="comment"># Common public DNS servers</span>
+Google:     8.8.8.8, 8.8.4.4
+Cloudflare: 1.1.1.1, 1.0.0.1
+OpenDNS:    208.67.222.222, 208.67.220.220
+    </div>
+    <div class="tip-box tip-green">
+      ✅ <strong>Best practice:</strong> Change your DNS to Cloudflare (1.1.1.1) or Google (8.8.8.8) for faster, more private browsing!
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🏗️</span> OSI Model & Protocols</div>
+    <p>The OSI model has 7 layers: Physical, Data Link, Network, Transport, Session, Presentation, Application. Key protocols: HTTP/HTTPS (web), TCP/UDP (transport), IP (network), Ethernet (data link).</p>
+    <div class="code-block">
+<span class="comment"># OSI Layers (memorize: "Please Do Not Throw Sausage Pizza Away")</span>
+7 - Application  (HTTP, FTP, DNS)
+6 - Presentation  (SSL/TLS, encryption)
+5 - Session      (NetBIOS, RPC)
+4 - Transport    (TCP, UDP)
+3 - Network      (IP, ICMP, routing)
+2 - Data Link    (Ethernet, MAC addresses)
+1 - Physical     (cables, hubs, signals)
+
+<span class="comment"># TCP vs UDP</span>
+TCP: Reliable, ordered, error-checked (web, email, file transfer)
+UDP: Fast, no guarantee (streaming, gaming, VoIP)
+    </div>
+    <div class="tip-box tip-cyan">
+      🚀 <strong>Remember:</strong> Routers operate at Layer 3 (Network), Switches at Layer 2 (Data Link). Understanding layers helps troubleshoot network issues!
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🔌</span> Network Devices & Topologies</div>
+    <p>Routers connect different networks. Switches connect devices within same network. Hubs broadcast to all ports (outdated). Access Points provide Wi-Fi. Common topologies: Star, Bus, Ring, Mesh.</p>
+    <div class="code-block">
+<span class="comment"># Device functions</span>
+🖧 <span class="keyword">Router</span>    → Forwards packets between networks (home WiFi router)
+🖧 <span class="keyword">Switch</span>   → Connects devices, learns MAC addresses
+🖧 <span class="keyword">Hub</span>      → Broadcasts to all ports (security risk, low efficiency)
+🖧 <span class="keyword">Modem</span>    → Converts ISP signal to Ethernet
+🖧 <span class="keyword">AP</span>       → Wireless access point for Wi-Fi
+
+<span class="comment"># ping command tests connectivity</span>
+<span class="function">ping</span> google.com       <span class="comment"># tests reachability</span>
+<span class="function">tracert</span> google.com   <span class="comment"># shows route (Windows)</span>
+<span class="function">traceroute</span> google.com <span class="comment"># same on Linux/Mac</span>
+    </div>
+    <div class="tip-box tip-gold">
+      ⚡ <strong>Network tip:</strong> Use `ping 8.8.8.8` to test internet connectivity. If it works but `ping google.com` fails, your DNS is the problem!
+    </div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-label">🏆 Quiz Time</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-meta">
+      <span class="quiz-label">// Knowledge Check</span>
+      <span class="score-badge" id="scoreBadge">Score: 0 / 10</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div id="quizContainer"></div>
+    <button class="next-btn" id="nextBtn">Next Question →</button>
+  </div>
+
+</div>
+
+<script>
+  // ===================== 10 NETWORKING QUESTIONS =====================
+  const questions = [
+    {
+      text: "What does IP stand for?",
+      options: ["Internet Protocol", "Internal Program", "Interconnect Protocol", "Intelligent Processing"],
+      correct: 0,
+      explanation: "Internet Protocol is the principal communications protocol for relaying data across network boundaries."
+    },
+    {
+      text: "What is the purpose of DNS?",
+      options: ["Domain Name System - converts domain names to IP addresses", "Data Network Security", "Digital Number System", "Direct Network Service"],
+      correct: 0,
+      explanation: "DNS translates human-readable domain names (like google.com) into machine-readable IP addresses."
+    },
+    {
+      text: "Which device connects different networks together?",
+      options: ["Switch", "Router", "Hub", "Modem"],
+      correct: 1,
+      explanation: "Routers connect multiple networks and forward data between them. Switches connect devices within the same network."
+    },
+    {
+      text: "What does HTTP stand for?",
+      options: ["HyperText Transfer Protocol", "High Transfer Text Protocol", "Hyper Transfer Text Program", "Host Transfer Protocol"],
+      correct: 0,
+      explanation: "HTTP is the foundation of data communication for the World Wide Web."
+    },
+    {
+      text: "What is a common private IP address range?",
+      options: ["192.168.x.x", "8.8.8.8", "1.1.1.1", "172.217.x.x"],
+      correct: 0,
+      explanation: "192.168.x.x is a private IPv4 range, not routable on the public internet, used for local networks."
+    },
+    {
+      text: "Which OSI layer is responsible for routing packets?",
+      options: ["Physical (Layer 1)", "Data Link (Layer 2)", "Network (Layer 3)", "Transport (Layer 4)"],
+      correct: 2,
+      explanation: "The Network Layer (Layer 3) handles packet routing and IP addressing."
+    },
+    {
+      text: "What protocol guarantees reliable, ordered delivery of data?",
+      options: ["UDP", "IP", "TCP", "HTTP"],
+      correct: 2,
+      explanation: "TCP (Transmission Control Protocol) provides reliable, connection-oriented communication with error checking."
+    },
+    {
+      text: "What does 'ping' command test?",
+      options: ["Download speed", "Network connectivity and latency", "Open ports", "DNS resolution only"],
+      correct: 1,
+      explanation: "Ping sends ICMP echo requests to test if a host is reachable and measure round-trip time."
+    },
+    {
+      text: "Which device operates at the Data Link Layer (Layer 2)?",
+      options: ["Router", "Switch", "Hub", "Firewall"],
+      correct: 1,
+      explanation: "Switches operate at Layer 2, using MAC addresses to forward frames within a local network."
+    },
+    {
+      text: "What is the loopback IP address (localhost)?",
+      options: ["0.0.0.0", "255.255.255.255", "127.0.0.1", "192.168.0.1"],
+      correct: 2,
+      explanation: "127.0.0.1 is the loopback address that points to your own computer, used for testing network software."
+    }
+  ];
+
+  let currentQ = 0, score = 0, answered = false;
+  const total = questions.length;
+
+  function renderQuestion() {
+    const q = questions[currentQ];
+    const progress = (currentQ / total) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+
+    let optHTML = '';
+    for (let i = 0; i < q.options.length; i++) {
+      const letter = String.fromCharCode(65 + i);
+      optHTML += `
+        <div class="option" data-opt="${i}">
+          <span class="option-letter">${letter}</span>
+          ${escapeHtml(q.options[i])}
+        </div>`;
+    }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="question-card">
+        <div class="question-num">Question ${currentQ + 1} of ${total}</div>
+        <div class="question-text">${escapeHtml(q.text)}</div>
+        <div class="options-list">${optHTML}</div>
+        <div id="feedback" class="feedback"></div>
+      </div>`;
+
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.remove('visible');
+    answered = false;
+
+    const options = document.querySelectorAll('.option');
+    for (let i = 0; i < options.length; i++) {
+      options[i].onclick = null;
+      options[i].onclick = function(e) {
+        e.stopPropagation();
+        const idx = parseInt(this.getAttribute('data-opt'));
+        selectOption(idx);
+      };
+    }
+  }
+
+  function selectOption(selectedIdx) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    const isCorrect = (selectedIdx === q.correct);
+    
+    if (isCorrect) score++;
+
+    const allOptions = document.querySelectorAll('.option');
+    for (let i = 0; i < allOptions.length; i++) {
+      allOptions[i].classList.add('locked');
+      if (i === q.correct) allOptions[i].classList.add('correct');
+      if (i === selectedIdx && !isCorrect) allOptions[i].classList.add('incorrect');
+    }
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+    if (isCorrect) {
+      fb.innerHTML = '✅ Correct! ' + q.explanation;
+    } else {
+      const correctLetter = String.fromCharCode(65 + q.correct);
+      fb.innerHTML = '❌ Not quite. The correct answer is ' + correctLetter + '. ' + q.explanation;
+    }
+
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.add('visible');
+  }
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.onclick = function() {
+    if (!answered) return;
+    currentQ++;
+    if (currentQ < total) {
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  };
+
+  function showResults() {
+    document.getElementById('progressBar').style.width = '100%';
+    const pct = Math.round((score / total) * 100);
+    let emoji, msg;
+    
+    if (pct >= 90) { 
+      emoji = '🌐🏆'; 
+      msg = "Network Architect! You understand how the internet really works!"; 
+    } else if (pct >= 70) { 
+      emoji = '📡✨'; 
+      msg = "Solid networking knowledge! Practice with tools like ping and traceroute."; 
+    } else if (pct >= 50) { 
+      emoji = '👍🔌'; 
+      msg = "Good foundation! Review the OSI model and IP addressing concepts above."; 
+    } else { 
+      emoji = '🌱📡'; 
+      msg = "Networking takes practice — review the cards and try the quiz again!"; 
+    }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="result-card">
+        <div class="result-emoji">${emoji}</div>
+        <div class="result-title">Quiz Complete!</div>
+        <div class="result-score">${score} / ${total} correct — ${pct}%</div>
+        <p class="result-msg">${msg}</p>
+        <div class="result-actions">
+          <button class="result-btn primary" onclick="location.reload()">🔄 Try Again</button>
+          <button class="result-btn secondary" onclick="location.href='index.html'">🏠 Dashboard</button>
+        </div>
+      </div>`;
+    
+    const nextBtnElem = document.getElementById('nextBtn');
+    nextBtnElem.classList.remove('visible');
+    document.getElementById('scoreBadge').textContent = `Final: ${score} / ${total}`;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>

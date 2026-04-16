@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICT Learning Platform | Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:   #050d1a;
+      --navy2:  #091525;
+      --panel:  #0d1e30;
+      --border: rgba(0,212,255,0.15);
+      --cyan:   #00d4ff;
+      --cyan2:  #38bdf8;
+      --gold:   #f59e0b;
+      --text:   #e2eaf4;
+      --muted:  #6b8aaa;
+      --card:   rgba(13,30,48,0.85);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: var(--navy);
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── animated grid background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── glowing orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:520px; height:520px; background: rgba(0,212,255,0.07); top:-120px; left:-100px; animation-delay:0s; }
+    .orb-2 { width:400px; height:400px; background: rgba(56,189,248,0.06); bottom:-80px; right:-80px; animation-delay:-6s; }
+    .orb-3 { width:280px; height:280px; background: rgba(245,158,11,0.05); top:50%; left:50%; transform:translate(-50%,-50%); animation-delay:-3s; }
+
+    @keyframes drift {
+      from { transform: translate(0,0); }
+      to   { transform: translate(30px, 20px); }
+    }
+
+    /* ── layout wrapper ── */
+    .shell {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+
+    /* ── top bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 3rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      background: rgba(5,13,26,0.7);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--cyan), #0068ff);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 0 18px rgba(0,212,255,0.4);
+    }
+
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #fff 40%, var(--cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Solve button in header */
+    .solve-header-btn {
+      background: linear-gradient(105deg, rgba(0,212,255,0.12), rgba(0,100,255,0.08));
+      border: 1px solid var(--cyan);
+      border-radius: 40px;
+      padding: 0.6rem 1.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(4px);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 8px rgba(0,212,255,0.3);
+    }
+    .solve-header-btn:hover {
+      background: var(--cyan);
+      color: var(--navy);
+      box-shadow: 0 0 20px var(--cyan);
+      transform: scale(1.02);
+    }
+
+    /* ── hero section ── */
+    .hero {
+      padding: 5rem 3rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      max-width: 1340px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-left { position: relative; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1.4rem;
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.9rem;
+      border-radius: 4px;
+      background: rgba(0,212,255,0.06);
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 6vw, 6.5rem);
+      line-height: 0.92;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 1.8rem;
+    }
+
+    .hero-title .accent {
+      background: linear-gradient(90deg, var(--cyan), #4facfe);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 420px;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── features panel ── */
+    .features-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(16px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .features-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+
+    .panel-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1.4rem;
+    }
+
+    .feat-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      animation: fadeUp 0.5s ease both;
+    }
+    .feat-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .feat-item:nth-child(1){ animation-delay:.05s }
+    .feat-item:nth-child(2){ animation-delay:.12s }
+    .feat-item:nth-child(3){ animation-delay:.19s }
+    .feat-item:nth-child(4){ animation-delay:.26s }
+
+    .feat-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .fi-blue  { background: rgba(0,212,255,0.12); }
+    .fi-green { background: rgba(52,211,153,0.12); }
+    .fi-gold  { background: rgba(245,158,11,0.12); }
+    .fi-pink  { background: rgba(244,114,182,0.12); }
+
+    .feat-info strong { display:block; font-size: 0.95rem; color:#fff; font-weight:600; margin-bottom:2px; }
+    .feat-info span   { font-size: 0.82rem; color: var(--muted); }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(14px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* ── topics section ── */
+    .topics-section {
+      padding: 0 3rem 4rem;
+      max-width: 1340px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .section-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    /* Solve button above choose your track */
+    .solve-track-btn {
+      background: rgba(0,212,255,0.08);
+      border: 1px solid var(--cyan);
+      border-radius: 40px;
+      padding: 0.5rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .solve-track-btn:hover {
+      background: var(--cyan);
+      color: var(--navy);
+      box-shadow: 0 0 15px var(--cyan);
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+
+    .topic-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.6rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .topic-card:nth-child(1){ animation-delay:.08s }
+    .topic-card:nth-child(2){ animation-delay:.15s }
+    .topic-card:nth-child(3){ animation-delay:.22s }
+    .topic-card:nth-child(4){ animation-delay:.29s }
+    .topic-card:nth-child(5){ animation-delay:.36s }
+    .topic-card:nth-child(6){ animation-delay:.43s }
+
+    .topic-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,0.06), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .topic-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      border-color: rgba(0,212,255,0.4);
+      box-shadow: 0 24px 40px -12px rgba(0,0,0,0.5), 0 0 30px -8px rgba(0,212,255,0.2);
+    }
+    .topic-card:hover::after { opacity:1; }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.2rem;
+    }
+
+    .topic-icon-wrap {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .ic-web   { background: rgba(0,212,255,0.1); }
+    .ic-js    { background: rgba(245,158,11,0.1); }
+    .ic-py    { background: rgba(52,211,153,0.1); }
+    .ic-sec   { background: rgba(244,114,182,0.1); }
+    .ic-net   { background: rgba(139,92,246,0.1); }
+    .ic-cloud { background: rgba(56,189,248,0.1); }
+
+    .card-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--cyan);
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .topic-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .topic-card p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 1.3rem;
+    }
+
+    .btn-start {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--cyan);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-start:hover {
+      background: var(--cyan);
+      color: var(--navy);
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0,212,255,0.35);
+    }
+
+    .btn-arrow {
+      transition: transform 0.2s;
+    }
+    .btn-start:hover .btn-arrow { transform: translateX(4px); }
+
+    /* ── footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      backdrop-filter: blur(12px);
+      background: rgba(5,13,26,0.6);
+    }
+
+    footer span:first-child::before {
+      content: '// ';
+      color: var(--cyan);
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 1060px) {
+      .topics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 820px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        padding: 3rem 1.5rem 2rem;
+      }
+      .hero-desc { max-width: 100%; }
+      .topics-section { padding: 0 1.5rem 3rem; }
+      .topbar { padding: 1.2rem 1.5rem; }
+      footer { padding: 1rem 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 580px) {
+      .topics-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="shell">
+
+  <!-- TOP BAR - removed random info (system online, 200+ modules, 10k+ learners) and added Solve the code button -->
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-icon">💻</div>
+      <span class="logo-text">ICT Learning Hub</span>
+    </div>
+    <button class="solve-header-btn" id="solveCodeHeaderBtn">🔓 SOLVE THE CODE</button>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HERO - removed stat row (10k+ learners, 200+ modules, 6 tracks) -->
+    <section class="hero">
+      <div class="hero-left">
+        <div class="eyebrow"><span class="dot"></span> Interactive Learning</div>
+        <h1 class="hero-title">
+          BUILD YOUR<br>
+          <span class="accent">DIGITAL</span><br>
+          FUTURE
+        </h1>
+        <p class="hero-desc">
+          Master modern ICT through hands-on lessons, coding exercises,
+          and SoloLearn-style quizzes. Go from curious to confident — at your own pace.
+        </p>
+      </div>
+
+      <div class="features-panel">
+        <div class="panel-label">// Platform features</div>
+
+        <div class="feat-item">
+          <div class="feat-icon fi-blue">🚀</div>
+          <div class="feat-info">
+            <strong>Self-paced learning</strong>
+            <span>Progress through lessons on your own schedule, no pressure</span>
+          </div>
+        </div>
+        <div class="feat-item">
+          <div class="feat-icon fi-green">🧠</div>
+          <div class="feat-info">
+            <strong>Interactive quizzes</strong>
+            <span>Reinforce concepts with instant feedback and explanations</span>
+          </div>
+        </div>
+        <div class="feat-item">
+          <div class="feat-icon fi-pink">💻</div>
+          <div class="feat-info">
+            <strong>Coding practice</strong>
+            <span>Write and run real code directly in the browser</span>
+          </div>
+        </div>
+        <div class="feat-item">
+          <div class="feat-icon fi-gold">🏆</div>
+          <div class="feat-info">
+            <strong>XP & certificates</strong>
+            <span>Earn points and credentials as you complete tracks</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICS with "Solve the code" button above choose your track -->
+    <section class="topics-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Choose your track</h2>
+          <span class="section-sub">Pick a topic and start learning today</span>
+        </div>
+        <button class="solve-track-btn" id="solveCodeTrackBtn">🔓 SOLVE THE CODE</button>
+      </div>
+
+      <div class="topics-grid">
+
+        <div class="topic-card" onclick="location.href='html_css.html'">
+          <div class="card-top">
+            <div class="topic-icon-wrap ic-web">🌐</div>
+            <span class="card-badge">Beginner</span>
+          </div>
+          <h3>HTML & CSS</h3>
+          <p>Build responsive, modern websites with semantic markup and CSS techniques.</p>
+          <button class="btn-start">Start Lesson <span class="btn-arrow">→</span></button>
+        </div>
+
+        <div class="topic-card" onclick="location.href='javascript.html'">
+          <div class="card-top">
+            <div class="topic-icon-wrap ic-js">⚡</div>
+            <span class="card-badge">Beginner</span>
+          </div>
+          <h3>JavaScript Basics</h3>
+          <p>Make web pages interactive and dynamic with the world's most-used language.</p>
+          <button class="btn-start">Start Lesson <span class="btn-arrow">→</span></button>
+        </div>
+
+        <div class="topic-card" onclick="location.href='python.html'">
+          <div class="card-top">
+            <div class="topic-icon-wrap ic-py">🐍</div>
+            <span class="card-badge">Beginner</span>
+          </div>
+          <h3>Python Intro</h3>
+          <p>Master syntax, loops, functions, and data structures in Python.</p>
+          <button class="btn-start">Start Lesson <span class="btn-arrow">→</span></button>
+        </div>
+
+        <div class="topic-card" onclick="location.href='cybersecurity.html'">
+          <div class="card-top">
+            <div class="topic-icon-wrap ic-sec">🔐</div>
+            <span class="card-badge">Intermediate</span>
+          </div>
+          <h3>Cybersecurity 101</h3>
+          <p>Understand modern threats, attack vectors, and how to defend against them.</p>
+          <button class="btn-start">Start Lesson <span class="btn-arrow">→</span></button>
+        </div>
+
+        <div class="topic-card" onclick="location.href='networking.html'">
+          <div class="card-top">
+            <div class="topic-icon-wrap ic-net">📡</div>
+            <span class="card-badge">Intermediate</span>
+          </div>
+          <h3>Networking Core</h3>
+          <p>IP addresses, DNS, the OSI model, subnetting, and more fundamentals.</p>
+          <button class="btn-start">Start Lesson <span class="btn-arrow">→</span></button>
+        </div>
+
+        <div class="topic-card" onclick="location.href='cloud.html'">
+          <div class="card-top">
+            <div class="topic-icon-wrap ic-cloud">☁️</div>
+            <span class="card-badge">Advanced</span>
+          </div>
+          <h3>Cloud Concepts</h3>
+          <p>Explore AWS, Azure, and the fundamentals of modern cloud deployment.</p>
+          <button class="btn-start">Start Lesson <span class="btn-arrow">→</span></button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>ICT Learning Hub — interactive &amp; free resources</span>
+    <span>© 2025 | Build skills with confidence</span>
+  </footer>
+
+</div>
+
+<script>
+  // Make both "Solve the code" buttons redirect to solvinggame.html
+  document.getElementById('solveCodeHeaderBtn')?.addEventListener('click', function() {
+    window.location.href = 'solvinggame.html';
+  });
+  document.getElementById('solveCodeTrackBtn')?.addEventListener('click', function() {
+    window.location.href = 'solvinggame.html';
+  });
+</script>
+
+</body>
+</html>

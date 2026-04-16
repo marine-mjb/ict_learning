@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Mastery | ICT Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:   #050d1a;
+      --panel:  #0d1e30;
+      --border: rgba(0, 212, 255, 0.25);
+      --python: #3776ab;
+      --cyan:   #00d4ff;
+      --green:  #34d399;
+      --red:    #f87171;
+      --gold:   #f59e0b;
+      --text:   #e2eaf4;
+      --muted:  #6b8aaa;
+      --card:   rgba(13,30,48,0.9);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: var(--navy);
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(110px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:480px; height:480px; background: rgba(55,118,171,0.07); top:-100px; left:-80px; }
+    .orb-2 { width:360px; height:360px; background: rgba(0,212,255,0.05); bottom:-60px; right:-60px; animation-delay:-7s; }
+
+    @keyframes drift {
+      from { transform: translate(0,0); }
+      to   { transform: translate(25px,18px); }
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid var(--border);
+      color: var(--cyan);
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1.8rem;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .back-btn:hover { background: var(--cyan); color: var(--navy); }
+
+    .page-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.2rem 2.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+    .page-header-inner { display:flex; align-items:center; gap:1.4rem; }
+    .header-icon {
+      width:64px; height:64px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.25);
+      border-radius: 16px;
+      display:flex; align-items:center; justify-content:center;
+      font-size: 2rem; flex-shrink:0;
+    }
+    .header-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .page-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      letter-spacing: 2px;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .page-header p { font-size:0.9rem; color:var(--muted); }
+
+    .lesson-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.8rem 2rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+    .lesson-card::before {
+      content:'';
+      position:absolute;
+      left:0; top:0; bottom:0; width:3px;
+      background: linear-gradient(180deg, var(--cyan), #3776ab);
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .lesson-card:nth-child(1){ animation-delay:.05s }
+    .lesson-card:nth-child(2){ animation-delay:.12s }
+    .lesson-card:nth-child(3){ animation-delay:.19s }
+    .lesson-card:nth-child(4){ animation-delay:.26s }
+
+    .lesson-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1.5px;
+      color: #fff;
+      margin-bottom: 0.8rem;
+    }
+    .lesson-card-title span {
+      background: rgba(0,212,255,0.1);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.6rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+    }
+
+    .lesson-card p {
+      font-size: 0.93rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .tip-box {
+      background: rgba(0,212,255,0.06);
+      border: 1px solid rgba(0,212,255,0.18);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.85rem;
+      color: #67e8f9;
+      line-height: 1.6;
+      margin-top: 0.5rem;
+    }
+    .tip-box strong { color: #fff; }
+
+    .tip-gold {
+      background: rgba(245,158,11,0.07);
+      border-color: rgba(245,158,11,0.2);
+      color: #fcd34d;
+    }
+    .tip-green {
+      background: rgba(52,211,153,0.07);
+      border-color: rgba(52,211,153,0.2);
+      color: #6ee7b7;
+    }
+    .tip-cyan {
+      background: rgba(0,212,255,0.07);
+      border-color: rgba(0,212,255,0.2);
+      color: #67e8f9;
+    }
+
+    .code-block {
+      background: #050d1a;
+      border: 1px solid rgba(0,212,255,0.12);
+      color: #e9d5ff;
+      padding: 1.1rem 1.3rem;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin: 0.8rem 0;
+    }
+    .code-block .keyword { color: #c084fc; }
+    .code-block .function { color: #67e8f9; }
+    .code-block .string { color: #34d399; }
+    .code-block .comment { color: #475569; font-style:italic; }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    .tag-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid var(--border);
+      color: #67e8f9;
+      padding: 0.25rem 0.7rem;
+      border-radius: 5px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0 1.5rem;
+    }
+    .divider-line { flex:1; height:1px; background: var(--border); }
+    .divider-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: var(--cyan);
+    }
+
+    .quiz-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 0.3s both;
+    }
+    .quiz-wrap::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .score-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--cyan);
+      background: rgba(0,212,255,0.08);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+    }
+
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      height: 4px;
+      margin-bottom: 1.8rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), #3776ab);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .question-card {
+      background: rgba(5,13,26,0.6);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 1.6rem;
+    }
+    .question-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
+
+    .options-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .option:hover:not(.locked) {
+      background: rgba(0,212,255,0.07);
+      border-color: rgba(0,212,255,0.3);
+      color: #fff;
+    }
+    .option-letter {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+    .option.correct {
+      background: rgba(52,211,153,0.1);
+      border-color: rgba(52,211,153,0.4);
+      color: var(--green);
+    }
+    .option.correct .option-letter {
+      background: rgba(52,211,153,0.2);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .option.incorrect {
+      background: rgba(248,113,113,0.08);
+      border-color: rgba(248,113,113,0.3);
+      color: var(--red);
+    }
+    .option.incorrect .option-letter {
+      background: rgba(248,113,113,0.15);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .option.locked { cursor: default; }
+
+    .feedback {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); color: var(--green); }
+    .feedback.incorrect { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); color: var(--red); }
+
+    .next-btn {
+      margin-top: 1.4rem;
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--cyan);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .next-btn:hover {
+      background: var(--cyan);
+      color: var(--navy);
+      box-shadow: 0 0 22px rgba(0,212,255,0.3);
+    }
+    .next-btn.visible { display: block; }
+
+    .result-card {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .result-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .result-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .result-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--cyan);
+      margin-bottom: 0.5rem;
+    }
+    .result-msg { color: var(--muted); font-size:0.95rem; margin-bottom: 2rem; }
+
+    .result-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .result-btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+    .result-btn.primary { background: var(--cyan); color: var(--navy); border-color: var(--cyan); }
+    .result-btn.primary:hover { box-shadow: 0 0 22px rgba(0,212,255,0.4); }
+    .result-btn.secondary { background: transparent; color: var(--text); }
+    .result-btn.secondary:hover { background: rgba(255,255,255,0.06); }
+
+    @media (max-width: 600px) {
+      body { padding: 1.2rem 1rem; }
+      .page-header { padding: 1.5rem; }
+      .page-header h1 { font-size: 2rem; }
+      .lesson-card { padding: 1.4rem 1.5rem; }
+      .quiz-wrap { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="page-wrap">
+
+  <button class="back-btn" onclick="location.href='index.html'">← Back to Dashboard</button>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="header-icon">🐍</div>
+      <div>
+        <div class="header-eyebrow">// Track 03 · Python Core</div>
+        <h1>Python Programming</h1>
+        <p>Write clean, readable code that powers AI, web, and automation</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🧠</span> Why Python?</div>
+    <p>Python is the world's most popular programming language — known for its simple, readable syntax. It's used in web development, data science, artificial intelligence, automation, and scientific computing. Python emphasizes code readability with significant whitespace.</p>
+    <div class="code-block">
+<span class="comment"># Your first Python program</span>
+<span class="keyword">print</span>(<span class="string">"Hello, Python Learner!"</span>)
+
+<span class="comment"># Dynamic typing in action</span>
+name = <span class="string">"Pythonista"</span>
+version = 3.12
+<span class="keyword">print</span>(<span class="string">f"Welcome {name} to v{version}"</span>)
+    </div>
+    <div class="tip-box">
+      💡 <strong>Pro tip:</strong> Python's interactive REPL (type `python` in terminal) lets you test code instantly — great for experimentation!
+    </div>
+    <div class="tag-row">
+      <span class="tag-pill">dynamic typing</span>
+      <span class="tag-pill">interpreted</span>
+      <span class="tag-pill">batteries included</span>
+      <span class="tag-pill">indentation</span>
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>📦</span> Variables & Data Types</div>
+    <p>Python variables are dynamically typed — no declaration needed. Core types: int, float, str, bool, list, tuple, dict, set. Use `type()` to check any variable's type.</p>
+    <div class="code-block">
+<span class="comment"># Variable assignment</span>
+age = 25                 <span class="comment"># int</span>
+price = 19.99            <span class="comment"># float</span>
+name = <span class="string">"Python"</span>        <span class="comment"># str</span>
+is_fun = <span class="keyword">True</span>         <span class="comment"># bool</span>
+skills = [<span class="string">"coding"</span>, <span class="string">"data"</span>, <span class="string">"ai"</span>]  <span class="comment"># list</span>
+    </div>
+    <div class="tip-box tip-green">
+      ✅ <strong>Best practice:</strong> Use descriptive variable names with snake_case: `user_age`, `total_price`, `is_active`.
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🔄</span> Control Flow & Functions</div>
+    <p>Python uses indentation (4 spaces) to define code blocks. Master if/elif/else, for/while loops, and define reusable functions with `def`.</p>
+    <div class="code-block">
+<span class="comment"># Conditional logic</span>
+score = 85
+<span class="keyword">if</span> score >= 90:
+    grade = <span class="string">"A"</span>
+<span class="keyword">elif</span> score >= 80:
+    grade = <span class="string">"B"</span>
+<span class="keyword">else</span>:
+    grade = <span class="string">"C"</span>
+
+<span class="comment"># Function with parameters</span>
+<span class="keyword">def</span> <span class="function">greet_user</span>(name, greeting=<span class="string">"Hello"</span>):
+    <span class="keyword">return</span> <span class="string">f"{greeting}, {name}!"</span>
+    </div>
+    <div class="tip-box tip-cyan">
+      🚀 <strong>List comprehension:</strong> `[x**2 for x in range(10) if x % 2 == 0]` — concise and Pythonic!
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>📚</span> Data Structures</div>
+    <p>Python's built-in collections: lists (mutable sequences), tuples (immutable), dictionaries (key-value pairs), and sets (unique elements). Master these for efficient data handling.</p>
+    <div class="code-block">
+<span class="comment"># Working with common structures</span>
+fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>]
+fruits.<span class="function">append</span>(<span class="string">"date"</span>)          <span class="comment"># add to list</span>
+
+user = {<span class="string">"name"</span>: <span class="string">"Alex"</span>, <span class="string">"role"</span>: <span class="string">"developer"</span>}
+<span class="keyword">print</span>(user[<span class="string">"name"</span>])                <span class="comment"># access dict value</span>
+
+unique_nums = {1, 2, 3, 3, 4}      <span class="comment"># set removes duplicates → {1,2,3,4}</span>
+    </div>
+    <div class="tip-box tip-gold">
+      ⚡ <strong>Pro tip:</strong> Use `enumerate()` to get index and value in loops: `for i, item in enumerate(list):`
+    </div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-label">🏆 Quiz Time</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-meta">
+      <span class="quiz-label">// Knowledge Check</span>
+      <span class="score-badge" id="scoreBadge">Score: 0 / 10</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div id="quizContainer"></div>
+    <button class="next-btn" id="nextBtn">Next Question →</button>
+  </div>
+
+</div>
+
+<script>
+  // ===================== 10 PYTHON QUESTIONS =====================
+  const questions = [
+    {
+      text: "What is the correct way to print 'Hello World' in Python?",
+      options: ["print('Hello World')", "echo 'Hello World'", "printf('Hello World')", "console.log('Hello World')"],
+      correct: 0,
+      explanation: "print() is Python's built-in function for console output."
+    },
+    {
+      text: "Which of these is a valid variable name in Python?",
+      options: ["2cool", "my-name", "my_name", "my name"],
+      correct: 2,
+      explanation: "Underscores are allowed; variables cannot start with digits or contain hyphens/spaces."
+    },
+    {
+      text: "What does the len() function return?",
+      options: ["Length (number of items) of an object", "Largest element", "Type of variable", "Memory size in bytes"],
+      correct: 0,
+      explanation: "len() returns the number of items in a container like string, list, tuple, or dict."
+    },
+    {
+      text: "Which symbol is used for single-line comments in Python?",
+      options: ["//", "#", "/*", "<!--"],
+      correct: 1,
+      explanation: "# is the comment symbol. Everything after # on that line is ignored."
+    },
+    {
+      text: "What is the output of print(2 ** 3)?",
+      options: ["6", "8", "9", "5"],
+      correct: 1,
+      explanation: "** is the exponent operator. 2 ** 3 = 2 × 2 × 2 = 8."
+    },
+    {
+      text: "Which data type is mutable in Python?",
+      options: ["tuple", "int", "str", "list"],
+      correct: 3,
+      explanation: "Lists are mutable (can be changed). Tuples, ints, strings are immutable."
+    },
+    {
+      text: "How do you start a for loop that iterates 5 times?",
+      options: ["for i in range(5):", "for i=0 to 5", "for (i=0; i<5; i++)", "loop i in 5:"],
+      correct: 0,
+      explanation: "range(5) generates numbers 0,1,2,3,4 — perfect for 5 iterations."
+    },
+    {
+      text: "What is the correct way to define a function that returns the square of a number?",
+      options: ["def square(x): return x**2", "function square(x): return x**2", "def square(x) { return x**2 }", "square(x) => x**2"],
+      correct: 0,
+      explanation: "Use def keyword, colon, and indented body. 'return' sends back the result."
+    },
+    {
+      text: "Which of the following is NOT a Python keyword?",
+      options: ["def", "lambda", "goto", "try"],
+      correct: 2,
+      explanation: "'goto' is not a keyword in Python. def, lambda, try are reserved words."
+    },
+    {
+      text: "What will this code output? print(type(10))",
+      options: ["<class 'int'>", "<class 'float'>", "<class 'number'>", "<class 'str'>"],
+      correct: 0,
+      explanation: "type() returns the class of object. 10 is an integer → <class 'int'>."
+    }
+  ];
+
+  let currentQ = 0, score = 0, answered = false;
+  const total = questions.length;
+
+  function renderQuestion() {
+    const q = questions[currentQ];
+    const progress = (currentQ / total) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+
+    let optHTML = '';
+    for (let i = 0; i < q.options.length; i++) {
+      const letter = String.fromCharCode(65 + i);
+      optHTML += `
+        <div class="option" data-opt="${i}">
+          <span class="option-letter">${letter}</span>
+          ${escapeHtml(q.options[i])}
+        </div>`;
+    }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="question-card">
+        <div class="question-num">Question ${currentQ + 1} of ${total}</div>
+        <div class="question-text">${escapeHtml(q.text)}</div>
+        <div class="options-list">${optHTML}</div>
+        <div id="feedback" class="feedback"></div>
+      </div>`;
+
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.remove('visible');
+    answered = false;
+
+    const options = document.querySelectorAll('.option');
+    for (let i = 0; i < options.length; i++) {
+      options[i].onclick = null;
+      options[i].onclick = function(e) {
+        e.stopPropagation();
+        const idx = parseInt(this.getAttribute('data-opt'));
+        selectOption(idx);
+      };
+    }
+  }
+
+  function selectOption(selectedIdx) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    const isCorrect = (selectedIdx === q.correct);
+    
+    if (isCorrect) score++;
+
+    const allOptions = document.querySelectorAll('.option');
+    for (let i = 0; i < allOptions.length; i++) {
+      allOptions[i].classList.add('locked');
+      if (i === q.correct) allOptions[i].classList.add('correct');
+      if (i === selectedIdx && !isCorrect) allOptions[i].classList.add('incorrect');
+    }
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+    if (isCorrect) {
+      fb.innerHTML = '✅ Correct! ' + q.explanation;
+    } else {
+      const correctLetter = String.fromCharCode(65 + q.correct);
+      fb.innerHTML = '❌ Not quite. The correct answer is ' + correctLetter + '. ' + q.explanation;
+    }
+
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.add('visible');
+  }
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.onclick = function() {
+    if (!answered) return;
+    currentQ++;
+    if (currentQ < total) {
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  };
+
+  function showResults() {
+    document.getElementById('progressBar').style.width = '100%';
+    const pct = Math.round((score / total) * 100);
+    let emoji, msg;
+    
+    if (pct >= 90) { 
+      emoji = '🏆🐍'; 
+      msg = "Outstanding Pythonista! You're ready to build real-world applications!"; 
+    } else if (pct >= 70) { 
+      emoji = '🎉✨'; 
+      msg = "Great work! Practice writing small scripts to solidify these concepts."; 
+    } else if (pct >= 50) { 
+      emoji = '👍📘'; 
+      msg = "Good effort! Re-read the lesson cards above and try the quiz again."; 
+    } else { 
+      emoji = '🌱💡'; 
+      msg = "Python takes practice — review the material and give it another shot!"; 
+    }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="result-card">
+        <div class="result-emoji">${emoji}</div>
+        <div class="result-title">Quiz Complete!</div>
+        <div class="result-score">${score} / ${total} correct — ${pct}%</div>
+        <p class="result-msg">${msg}</p>
+        <div class="result-actions">
+          <button class="result-btn primary" onclick="location.reload()">🔄 Try Again</button>
+          <button class="result-btn secondary" onclick="location.href='index.html'">🏠 Dashboard</button>
+        </div>
+      </div>`;
+    
+    const nextBtnElem = document.getElementById('nextBtn');
+    nextBtnElem.classList.remove('visible');
+    document.getElementById('scoreBadge').textContent = `Final: ${score} / ${total}`;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>

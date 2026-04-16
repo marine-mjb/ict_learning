@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud Concepts | ICT Learning Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:   #050d1a;
+      --panel:  #0d1e30;
+      --border: rgba(124, 58, 237, 0.35);
+      --purple: #8b5cf6;
+      --violet: #7c3aed;
+      --green:  #34d399;
+      --red:    #f87171;
+      --gold:   #f59e0b;
+      --text:   #e2eaf4;
+      --muted:  #6b8aaa;
+      --card:   rgba(13,30,48,0.92);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: #050d1a;
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124, 58, 237, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124, 58, 237, 0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(110px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:480px; height:480px; background: rgba(124,58,237,0.07); top:-100px; left:-80px; }
+    .orb-2 { width:360px; height:360px; background: rgba(139,92,246,0.05); bottom:-60px; right:-60px; animation-delay:-7s; }
+
+    @keyframes drift {
+      from { transform: translate(0,0); }
+      to   { transform: translate(25px,18px); }
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(139,92,246,0.08);
+      border: 1px solid var(--border);
+      color: #a78bfa;
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1.8rem;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .back-btn:hover { background: #7c3aed; color: var(--navy); border-color: #7c3aed; }
+
+    .page-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.2rem 2.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+    }
+    .page-header-inner { display:flex; align-items:center; gap:1.4rem; }
+    .header-icon {
+      width:64px; height:64px;
+      background: rgba(139,92,246,0.1);
+      border: 1px solid rgba(139,92,246,0.25);
+      border-radius: 16px;
+      display:flex; align-items:center; justify-content:center;
+      font-size: 2rem; flex-shrink:0;
+    }
+    .header-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: #a78bfa;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .page-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      letter-spacing: 2px;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .page-header p { font-size:0.9rem; color:var(--muted); }
+
+    .lesson-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.8rem 2rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+    .lesson-card::before {
+      content:'';
+      position:absolute;
+      left:0; top:0; bottom:0; width:3px;
+      background: linear-gradient(180deg, #8b5cf6, #7c3aed);
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .lesson-card:nth-child(1){ animation-delay:.05s }
+    .lesson-card:nth-child(2){ animation-delay:.12s }
+    .lesson-card:nth-child(3){ animation-delay:.19s }
+    .lesson-card:nth-child(4){ animation-delay:.26s }
+
+    .lesson-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1.5px;
+      color: #fff;
+      margin-bottom: 0.8rem;
+    }
+    .lesson-card-title span {
+      background: rgba(139,92,246,0.1);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.6rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+    }
+
+    .lesson-card p {
+      font-size: 0.93rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .tip-box {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.18);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.85rem;
+      color: #c4b5fd;
+      line-height: 1.6;
+      margin-top: 0.5rem;
+    }
+    .tip-box strong { color: #fff; }
+
+    .tip-gold {
+      background: rgba(245,158,11,0.07);
+      border-color: rgba(245,158,11,0.2);
+      color: #fcd34d;
+    }
+    .tip-green {
+      background: rgba(52,211,153,0.07);
+      border-color: rgba(52,211,153,0.2);
+      color: #6ee7b7;
+    }
+    .tip-cyan {
+      background: rgba(6,182,212,0.07);
+      border-color: rgba(6,182,212,0.2);
+      color: #67e8f9;
+    }
+
+    .code-block {
+      background: #050d1a;
+      border: 1px solid rgba(139,92,246,0.12);
+      color: #e9d5ff;
+      padding: 1.1rem 1.3rem;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin: 0.8rem 0;
+    }
+    .code-block .keyword { color: #c4b5fd; }
+    .code-block .function { color: #a78bfa; }
+    .code-block .string { color: #34d399; }
+    .code-block .comment { color: #475569; font-style:italic; }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    .tag-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      background: rgba(139,92,246,0.08);
+      border: 1px solid var(--border);
+      color: #c4b5fd;
+      padding: 0.25rem 0.7rem;
+      border-radius: 5px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0 1.5rem;
+    }
+    .divider-line { flex:1; height:1px; background: var(--border); }
+    .divider-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: #a78bfa;
+    }
+
+    .quiz-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 0.3s both;
+    }
+    .quiz-wrap::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .score-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #a78bfa;
+      background: rgba(139,92,246,0.08);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+    }
+
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      height: 4px;
+      margin-bottom: 1.8rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .question-card {
+      background: rgba(5,13,26,0.6);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 1.6rem;
+    }
+    .question-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
+
+    .options-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .option:hover:not(.locked) {
+      background: rgba(139,92,246,0.07);
+      border-color: rgba(139,92,246,0.3);
+      color: #fff;
+    }
+    .option-letter {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+    .option.correct {
+      background: rgba(52,211,153,0.1);
+      border-color: rgba(52,211,153,0.4);
+      color: var(--green);
+    }
+    .option.correct .option-letter {
+      background: rgba(52,211,153,0.2);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .option.incorrect {
+      background: rgba(248,113,113,0.08);
+      border-color: rgba(248,113,113,0.3);
+      color: var(--red);
+    }
+    .option.incorrect .option-letter {
+      background: rgba(248,113,113,0.15);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .option.locked { cursor: default; }
+
+    .feedback {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); color: var(--green); }
+    .feedback.incorrect { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); color: var(--red); }
+
+    .next-btn {
+      margin-top: 1.4rem;
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #a78bfa;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .next-btn:hover {
+      background: #8b5cf6;
+      color: var(--navy);
+      box-shadow: 0 0 22px rgba(139,92,246,0.3);
+    }
+    .next-btn.visible { display: block; }
+
+    .result-card {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .result-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .result-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .result-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: #a78bfa;
+      margin-bottom: 0.5rem;
+    }
+    .result-msg { color: var(--muted); font-size:0.95rem; margin-bottom: 2rem; }
+
+    .result-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .result-btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+    .result-btn.primary { background: #8b5cf6; color: var(--navy); border-color: #8b5cf6; }
+    .result-btn.primary:hover { box-shadow: 0 0 22px rgba(139,92,246,0.4); }
+    .result-btn.secondary { background: transparent; color: var(--text); }
+    .result-btn.secondary:hover { background: rgba(255,255,255,0.06); }
+
+    @media (max-width: 600px) {
+      body { padding: 1.2rem 1rem; }
+      .page-header { padding: 1.5rem; }
+      .page-header h1 { font-size: 2rem; }
+      .lesson-card { padding: 1.4rem 1.5rem; }
+      .quiz-wrap { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="page-wrap">
+
+  <button class="back-btn" onclick="location.href='index.html'">← Back to Dashboard</button>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="header-icon">☁️</div>
+      <div>
+        <div class="header-eyebrow">// Track 06 · Cloud Computing</div>
+        <h1>Cloud Concepts</h1>
+        <p>AWS, Azure, Google Cloud — deploy at global scale</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>☁️</span> What is Cloud Computing?</div>
+    <p>Cloud computing delivers computing services — servers, storage, databases, networking, software — over the internet ("the cloud"). Pay only for what you use, scale instantly, and access resources from anywhere.</p>
+    <div class="code-block">
+<span class="comment"># Key characteristics of cloud computing</span>
+• On-demand self-service
+• Broad network access
+• Resource pooling
+• Rapid elasticity (scale up/down)
+• Measured service (pay-as-you-go)
+
+<span class="comment"># Deployment models</span>
+Public Cloud   → AWS, Azure, GCP (shared infrastructure)
+Private Cloud  → Dedicated to one organization
+Hybrid Cloud   → Mix of public + private
+Multi-cloud    → Using multiple cloud providers
+    </div>
+    <div class="tip-box">
+      💡 <strong>Pro tip:</strong> Start with AWS Free Tier or Google Cloud Free Program — both offer free resources to learn cloud basics without spending money!
+    </div>
+    <div class="tag-row">
+      <span class="tag-pill">elasticity</span>
+      <span class="tag-pill">pay-as-you-go</span>
+      <span class="tag-pill">CAPEX vs OPEX</span>
+      <span class="tag-pill">global infrastructure</span>
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🏗️</span> Service Models: IaaS, PaaS, SaaS</div>
+    <p>IaaS (Infrastructure as a Service): raw compute, storage, networking. PaaS (Platform as a Service): deploy apps without managing servers. SaaS (Software as a Service): ready-to-use applications like Gmail, Office 365.</p>
+    <div class="code-block">
+<span class="comment"># Service models compared</span>
+┌─────────────────────────────────────────────┐
+│ <span class="keyword">SaaS</span>  → Software as a Service (Gmail, Dropbox)  │
+│ <span class="keyword">PaaS</span>  → Platform as a Service (Heroku, GAE)    │
+│ <span class="keyword">IaaS</span>  → Infrastructure as a Service (EC2, VMs)  │
+└─────────────────────────────────────────────┘
+
+<span class="comment"># Control vs Management trade-off</span>
+IaaS gives YOU most control (OS, middleware, apps)
+SaaS gives provider most control (just use the app)
+
+<span class="comment"># Examples of each</span>
+IaaS:  AWS EC2, Azure VMs, Google Compute Engine
+PaaS:  AWS Elastic Beanstalk, Heroku, Google App Engine
+SaaS:  Google Workspace, Salesforce, Zoom, Netflix
+    </div>
+    <div class="tip-box tip-green">
+      ✅ <strong>Best practice:</strong> Choose IaaS when you need full control. Choose PaaS to focus on code. Choose SaaS for instant productivity without management overhead.
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>📦</span> Major Cloud Providers & Services</div>
+    <p>AWS (Amazon Web Services) is market leader with 200+ services. Microsoft Azure dominates enterprise. Google Cloud excels in data/AI. Key services: Compute (VMs), Storage (S3/blob), Databases (RDS), Serverless (Lambda/Functions).</p>
+    <div class="code-block">
+<span class="comment"># Popular cloud services by category</span>
+<span class="keyword">Compute</span>     → EC2 (AWS), VMs (Azure), Compute Engine (GCP)
+<span class="keyword">Serverless</span>  → Lambda, Azure Functions, Cloud Functions
+<span class="keyword">Storage</span>     → S3, Blob Storage, Cloud Storage
+<span class="keyword">Database</span>    → RDS, Cosmos DB, Cloud SQL
+<span class="keyword">CDN</span>         → CloudFront, Azure CDN, Cloud CDN
+<span class="keyword">Container</span>   → ECS/EKS, AKS, GKE
+
+<span class="comment"># Market share (2024)</span>
+AWS:      ~32%   (still #1, but shrinking)
+Azure:    ~23%   (strong enterprise growth)
+Google:   ~11%   (AI/ML leader)
+Others:   ~34%   (Alibaba, IBM, Oracle)
+    </div>
+    <div class="tip-box tip-cyan">
+      🚀 <strong>Career tip:</strong> AWS Certified Cloud Practitioner is the best entry-level cloud certification to start your cloud career!
+    </div>
+  </div>
+
+  <div class="lesson-card">
+    <div class="lesson-card-title"><span>🔄</span> Cloud Benefits & Economics</div>
+    <p>Cloud eliminates upfront hardware costs. Scale from 1 to 1 million users instantly. Global deployment in minutes. High availability (99.99% uptime). Security compliance (HIPAA, GDPR). Disaster recovery built-in.</p>
+    <div class="code-block">
+<span class="comment"># Traditional IT vs Cloud</span>
+<span class="keyword">Traditional (On-premise)</span>
+• Buy servers weeks in advance
+• Pay for peak capacity (wasteful)
+• Manual scaling
+• Hardware maintenance headaches
+
+<span class="keyword">Cloud Computing</span>
+• Spin up resources in seconds
+• Pay only for what you use
+• Auto-scaling built-in
+• No hardware to manage
+
+<span class="comment"># Six key advantages</span>
+1. Trade capital expense for variable expense
+2. Massive economies of scale
+3. Stop guessing capacity
+4. Increase speed and agility
+5. Stop spending money on data centers
+6. Go global in minutes
+    </div>
+    <div class="tip-box tip-gold">
+      ⚡ <strong>FinOps tip:</strong> Set up budget alerts in AWS/Azure/GCP to avoid surprise bills. Unused resources cost money — clean up idle instances!
+    </div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-label">🏆 Quiz Time</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-meta">
+      <span class="quiz-label">// Knowledge Check</span>
+      <span class="score-badge" id="scoreBadge">Score: 0 / 10</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div id="quizContainer"></div>
+    <button class="next-btn" id="nextBtn">Next Question →</button>
+  </div>
+
+</div>
+
+<script>
+  // ===================== 10 CLOUD COMPUTING QUESTIONS =====================
+  const questions = [
+    {
+      text: "What does SaaS stand for in cloud computing?",
+      options: ["Software as a Service", "System as a Service", "Security as a Service", "Storage as a Service"],
+      correct: 0,
+      explanation: "SaaS delivers fully functional applications over the internet — users access via browser without managing infrastructure."
+    },
+    {
+      text: "Which of these is a major cloud provider?",
+      options: ["Amazon Web Services (AWS)", "Microsoft Office", "Google Search", "Facebook"],
+      correct: 0,
+      explanation: "AWS is the leading cloud provider, along with Microsoft Azure and Google Cloud Platform."
+    },
+    {
+      text: "What does 'scalability' mean in cloud computing?",
+      options: ["Ability to handle growth by adding resources", "Security feature for data protection", "Data encryption method", "Backup and recovery system"],
+      correct: 0,
+      explanation: "Scalability allows systems to handle increased load by adding resources (vertical or horizontal scaling)."
+    },
+    {
+      text: "What is IaaS?",
+      options: ["Infrastructure as a Service", "Internet as a Service", "Integration as a Service", "Interface as a Service"],
+      correct: 0,
+      explanation: "IaaS provides virtualized computing resources (VMs, storage, networks) over the internet."
+    },
+    {
+      text: "Which service model gives you the most control over the operating system and middleware?",
+      options: ["SaaS", "PaaS", "IaaS", "FaaS"],
+      correct: 2,
+      explanation: "IaaS gives you control over OS, storage, and deployed applications — PaaS and SaaS abstract more control away."
+    },
+    {
+      text: "What does 'pay-as-you-go' refer to in cloud?",
+      options: ["Only pay for resources you actually use", "Pay annually upfront", "Free tier only", "Subscription for all services"],
+      correct: 0,
+      explanation: "Cloud providers charge based on actual usage (compute hours, storage GB, data transfer) — no upfront commitment."
+    },
+    {
+      text: "Which cloud model is dedicated to a single organization?",
+      options: ["Public Cloud", "Private Cloud", "Hybrid Cloud", "Community Cloud"],
+      correct: 1,
+      explanation: "Private cloud is used exclusively by one organization, offering greater control and security."
+    },
+    {
+      text: "What is AWS EC2 primarily used for?",
+      options: ["Storage service", "Virtual servers in the cloud", "Database service", "Content delivery network"],
+      correct: 1,
+      explanation: "Amazon EC2 (Elastic Compute Cloud) provides resizable virtual machines in the cloud."
+    },
+    {
+      text: "Which characteristic allows cloud to automatically add resources during traffic spikes?",
+      options: ["Elasticity", "Durability", "Reliability", "Confidentiality"],
+      correct: 0,
+      explanation: "Elasticity automatically scales resources up during demand and down during low usage periods."
+    },
+    {
+      text: "What is a key benefit of cloud computing for startups?",
+      options: ["No upfront hardware costs", "Free unlimited resources", "No internet required", "Physical security only"],
+      correct: 0,
+      explanation: "Cloud eliminates expensive upfront hardware — startups can pay as they grow and iterate quickly."
+    }
+  ];
+
+  let currentQ = 0, score = 0, answered = false;
+  const total = questions.length;
+
+  function renderQuestion() {
+    const q = questions[currentQ];
+    const progress = (currentQ / total) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+
+    let optHTML = '';
+    for (let i = 0; i < q.options.length; i++) {
+      const letter = String.fromCharCode(65 + i);
+      optHTML += `
+        <div class="option" data-opt="${i}">
+          <span class="option-letter">${letter}</span>
+          ${escapeHtml(q.options[i])}
+        </div>`;
+    }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="question-card">
+        <div class="question-num">Question ${currentQ + 1} of ${total}</div>
+        <div class="question-text">${escapeHtml(q.text)}</div>
+        <div class="options-list">${optHTML}</div>
+        <div id="feedback" class="feedback"></div>
+      </div>`;
+
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.remove('visible');
+    answered = false;
+
+    const options = document.querySelectorAll('.option');
+    for (let i = 0; i < options.length; i++) {
+      options[i].onclick = null;
+      options[i].onclick = function(e) {
+        e.stopPropagation();
+        const idx = parseInt(this.getAttribute('data-opt'));
+        selectOption(idx);
+      };
+    }
+  }
+
+  function selectOption(selectedIdx) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentQ];
+    const isCorrect = (selectedIdx === q.correct);
+    
+    if (isCorrect) score++;
+
+    const allOptions = document.querySelectorAll('.option');
+    for (let i = 0; i < allOptions.length; i++) {
+      allOptions[i].classList.add('locked');
+      if (i === q.correct) allOptions[i].classList.add('correct');
+      if (i === selectedIdx && !isCorrect) allOptions[i].classList.add('incorrect');
+    }
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+    if (isCorrect) {
+      fb.innerHTML = '✅ Correct! ' + q.explanation;
+    } else {
+      const correctLetter = String.fromCharCode(65 + q.correct);
+      fb.innerHTML = '❌ Not quite. The correct answer is ' + correctLetter + '. ' + q.explanation;
+    }
+
+    document.getElementById('scoreBadge').textContent = `Score: ${score} / ${total}`;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.add('visible');
+  }
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.onclick = function() {
+    if (!answered) return;
+    currentQ++;
+    if (currentQ < total) {
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  };
+
+  function showResults() {
+    document.getElementById('progressBar').style.width = '100%';
+    const pct = Math.round((score / total) * 100);
+    let emoji, msg;
+    
+    if (pct >= 90) { 
+      emoji = '☁️🏆'; 
+      msg = "Cloud Architect! You're ready to deploy applications at global scale!"; 
+    } else if (pct >= 70) { 
+      emoji = '🎉✨'; 
+      msg = "Solid cloud foundation! Try the AWS Free Tier to get hands-on experience."; 
+    } else if (pct >= 50) { 
+      emoji = '👍📘'; 
+      msg = "Good start! Review the service models (IaaS/PaaS/SaaS) and try again."; 
+    } else { 
+      emoji = '🌱☁️'; 
+      msg = "Cloud is the future — review the cards above and take another shot at the quiz!"; 
+    }
+
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="result-card">
+        <div class="result-emoji">${emoji}</div>
+        <div class="result-title">Quiz Complete!</div>
+        <div class="result-score">${score} / ${total} correct — ${pct}%</div>
+        <p class="result-msg">${msg}</p>
+        <div class="result-actions">
+          <button class="result-btn primary" onclick="location.reload()">🔄 Try Again</button>
+          <button class="result-btn secondary" onclick="location.href='index.html'">🏠 Dashboard</button>
+        </div>
+      </div>`;
+    
+    const nextBtnElem = document.getElementById('nextBtn');
+    nextBtnElem.classList.remove('visible');
+    document.getElementById('scoreBadge').textContent = `Final: ${score} / ${total}`;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>
