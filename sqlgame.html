@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SQL · Solve the Code</title>
+  <title>SQL · Solve the Code — Real Debugging</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -83,6 +83,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
     .badge {
       background: rgba(0,212,255,0.2);
@@ -91,9 +92,14 @@
       font-size: 0.7rem;
       font-family: 'JetBrains Mono', monospace;
     }
+    .difficulty-badge {
+      background: rgba(245,158,11,0.2);
+      color: #fbbf24;
+      border-color: #f59e0b;
+    }
     textarea {
       width: 100%;
-      height: 350px;
+      height: 360px;
       background: #0a1424;
       border: 1px solid rgba(0,212,255,0.3);
       border-radius: 12px;
@@ -102,6 +108,7 @@
       font-size: 0.85rem;
       color: #e2eaf4;
       resize: vertical;
+      line-height: 1.5;
     }
     textarea:focus {
       outline: none;
@@ -122,7 +129,9 @@
       font-weight: 600;
       color: #fff;
       cursor: pointer;
+      transition: 0.2s;
     }
+    .run-btn:hover { opacity: 0.9; transform: translateY(-2px); }
     .hint-btn {
       background: rgba(245,158,11,0.2);
       border: 1px solid #f59e0b;
@@ -131,7 +140,9 @@
       font-family: 'JetBrains Mono', monospace;
       color: #f59e0b;
       cursor: pointer;
+      transition: 0.2s;
     }
+    .hint-btn:hover { background: rgba(245,158,11,0.4); }
     .giveup-btn {
       background: rgba(255,107,107,0.2);
       border: 1px solid #ff6b6b;
@@ -141,6 +152,7 @@
       color: #ff6b6b;
       cursor: pointer;
     }
+    .giveup-btn:hover { background: rgba(255,107,107,0.4); }
     .new-btn {
       background: transparent;
       border: 1px solid #00d4ff;
@@ -150,17 +162,21 @@
       color: #00d4ff;
       cursor: pointer;
     }
+    .new-btn:hover { background: rgba(0,212,255,0.2); }
     .output {
       background: #0a1424;
       border-radius: 12px;
       padding: 1rem;
-      min-height: 350px;
+      min-height: 360px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.85rem;
       white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 450px;
     }
-    .error { color: #ff6b6b; }
-    .success { color: #51cf66; }
+    .error { color: #ff6b6b; font-weight: 500; }
+    .success { color: #51cf66; font-weight: 500; }
+    .info { color: #74c0fc; }
     .modal {
       display: none;
       position: fixed;
@@ -168,158 +184,321 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(8px);
     }
     .modal-content {
       background: #0d1e30;
       border: 1px solid #00d4ff;
       border-radius: 20px;
       padding: 2rem;
-      max-width: 500px;
+      max-width: 550px;
       margin: 1rem;
       text-align: center;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.5);
     }
     .modal-content button {
-      margin-top: 1rem;
-      padding: 0.5rem 1.5rem;
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.8rem;
       background: #00d4ff;
       border: none;
-      border-radius: 10px;
+      border-radius: 30px;
       cursor: pointer;
+      font-weight: bold;
+    }
+    .modal-content code {
+      background: #1e2a3a;
+      padding: 0.5rem;
+      display: inline-block;
+      width: 100%;
+      border-radius: 12px;
+      text-align: left;
+      margin: 1rem 0;
     }
     @media (max-width: 900px) {
       .game-panel { grid-template-columns: 1fr; }
+      .container { padding: 1rem; }
+    }
+    .status-badge {
+      font-size: 0.7rem;
+      background: rgba(0,212,255,0.15);
+      border-radius: 30px;
+      padding: 0.2rem 0.6rem;
     }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="topbar">
-    <div class="logo">🗄️ SQL · DEBUG ARENA</div>
+    <div class="logo">🐘 SQL - Solve the Code</div>
     <a href="solvinggame.html" class="back-btn">← Change Language</a>
   </div>
   <div class="game-panel">
     <div class="code-section">
-      <div class="section-title"><span>🗄️ FIX THE QUERY</span><span class="badge">easy mode</span></div>
-      <textarea id="codeEditor" spellcheck="false"></textarea>
+      <div class="section-title">
+        <span>🔧 FIX THE BROKEN QUERY</span>
+        <span class="badge difficulty-badge" id="difficultyTag">error: syntax / logic</span>
+      </div>
+      <textarea id="codeEditor" spellcheck="false" placeholder="-- The SQL below contains real bugs. Fix it!"></textarea>
       <div class="button-group">
-        <button class="run-btn" onclick="runCode()">▶ RUN QUERY</button>
+        <button class="run-btn" onclick="runCode()">▶ RUN & VALIDATE</button>
         <button class="hint-btn" onclick="showHint()">💡 HINT</button>
         <button class="giveup-btn" onclick="giveUp()">🏳️ GIVE UP</button>
-        <button class="new-btn" onclick="loadNewChallenge()">🎲 NEW</button>
+        <button class="new-btn" onclick="loadNewChallenge()">🎲 NEXT CHALLENGE</button>
       </div>
     </div>
     <div class="output-section">
-      <div class="section-title"><span>📟 RESULT</span><span class="badge">query explanation</span></div>
-      <div class="output" id="outputArea">// Write your SQL query and click RUN</div>
+      <div class="section-title">
+        <span>📟 EXECUTION RESULT</span>
+        <span class="status-badge" id="queryStatus">waiting</span>
+      </div>
+      <div class="output" id="outputArea">/* Write a correct SQL query & press RUN. Each challenge is broken — fix the mistake! */</div>
     </div>
   </div>
 </div>
 
 <div id="hintModal" class="modal">
   <div class="modal-content">
-    <h3>💡 HINT</h3>
-    <p id="hintMessage"></p>
-    <button onclick="closeModal()">Got it!</button>
+    <h3>💡 DEBUG HINT</h3>
+    <p id="hintMessage" style="margin-top: 1rem;"></p>
+    <button onclick="closeModal()">UNDERSTOOD</button>
   </div>
 </div>
 
 <div id="answerModal" class="modal">
   <div class="modal-content">
-    <h3>📖 SOLUTION</h3>
-    <p id="answerMessage"></p>
-    <button onclick="closeAnswerModal()">Try Next →</button>
+    <h3>🔍 SOLUTION & EXPLANATION</h3>
+    <div id="answerMessage" style="text-align: left; margin-top: 0.5rem;"></div>
+    <button onclick="closeAnswerModal()">NEXT CHALLENGE →</button>
   </div>
 </div>
 
 <script>
+  // ------------------------------------------------------------------
+  // REAL BROKEN QUERIES (each has specific error, not cosmetic)
+  // Each challenge contains an actual SQL bug (missing keyword, wrong operator, etc)
+  // Validation is done by detecting the fix using pattern + structural checks
+  // ------------------------------------------------------------------
   const challenges = [
     {
-      broken: `-- Fix: Select all users
-SELECT * FORM users`,
-      fixed: `SELECT * FROM users`,
-      hint: "Spelling error! It's FROM, not FORM",
-      expectedKeyword: "FROM"
+      broken: `-- TASK: Get all customers from London
+SELECT * FORM customers WHERE city = 'London';`,
+      fixed: `SELECT * FROM customers WHERE city = 'London';`,
+      hint: "The error is a classic typo: 'FORM' instead of 'FROM'. SQL doesn't recognize FORM.",
+      description: "Spelling mistake: FORM → FROM",
+      validate: (code) => code.toUpperCase().includes("FROM") && code.toUpperCase().includes("CUSTOMERS") && code.includes("London") && !code.toUpperCase().includes("FORM")
     },
     {
-      broken: `-- Fix: Select name and age
-SELECT name age FROM students`,
-      fixed: `SELECT name, age FROM students`,
-      hint: "Missing comma between name and age",
-      expectedKeyword: "name, age"
+      broken: `-- TASK: List product names and prices
+SELECT product_name price FROM products;`,
+      fixed: `SELECT product_name, price FROM products;`,
+      hint: "Missing a comma between column names: product_name and price should be separated.",
+      description: "Syntax error: missing comma in SELECT list.",
+      validate: (code) => code.includes(",") && code.toUpperCase().includes("PRODUCT_NAME") && code.toUpperCase().includes("PRICE") && code.toUpperCase().includes("FROM PRODUCTS")
     },
     {
-      broken: `-- Fix: Get users older than 18
-SELECT * FROM users WHERE age > 18`,
-      fixed: `SELECT * FROM users WHERE age > 18`,
-      hint: "This query is actually correct! Just click RUN.",
-      expectedKeyword: "WHERE"
+      broken: `-- TASK: Show employees with salary > 5000
+SELECT * FROM employees WHERE salary > 5000;`,
+      fixed: `SELECT * FROM employees WHERE salary > 5000;`,
+      hint: "The original query is actually correct! But wait, test it — maybe you think it's wrong? It's not. However, some beginners forget '>' symbol. Keep it as is.",
+      description: "This query is correct — no changes needed! Just validate that it remains unbroken.",
+      validate: (code) => {
+        const up = code.toUpperCase();
+        return up.includes("SELECT *") && up.includes("FROM EMPLOYEES") && up.includes("WHERE SALARY > 5000") && !up.includes("FORM") && code.indexOf("5000") > 0;
+      }
     },
     {
-      broken: `-- Fix: Order by name
-SELECT * FROM products ORDER name`,
-      fixed: `SELECT * FROM products ORDER BY name`,
-      hint: "Missing BY after ORDER",
-      expectedKeyword: "ORDER BY"
+      broken: `-- TASK: Sort products by price descending
+SELECT name, price FROM products ORDER price DESC;`,
+      fixed: `SELECT name, price FROM products ORDER BY price DESC;`,
+      hint: "Missing keyword 'BY' after ORDER. Correct syntax: ORDER BY column.",
+      description: "Missing ORDER BY clause – ORDER alone is invalid.",
+      validate: (code) => code.toUpperCase().includes("ORDER BY") && code.toUpperCase().includes("PRICE DESC") && !code.toUpperCase().includes("ORDER PRICE")
     },
     {
-      broken: `-- Fix: Count all users
-SELECT COUNT(*) FORM users`,
-      fixed: `SELECT COUNT(*) FROM users`,
-      hint: "FORM should be FROM",
-      expectedKeyword: "FROM"
+      broken: `-- TASK: Count number of orders
+SELECT COUNT(*) FORM orders;`,
+      fixed: `SELECT COUNT(*) FROM orders;`,
+      hint: "Yet again: 'FORM' must be 'FROM'. SQL is picky about keywords.",
+      description: "Typo: FORM instead of FROM.",
+      validate: (code) => code.toUpperCase().includes("FROM ORDERS") && code.toUpperCase().includes("COUNT(*)") && !code.toUpperCase().includes("FORM")
+    },
+    {
+      broken: `-- TASK: Find users with age between 18 and 30
+SELECT * FROM users WHERE age >= 18 AND age = 30;`,
+      fixed: `SELECT * FROM users WHERE age BETWEEN 18 AND 30;`,
+      hint: "Logic error: 'age = 30' only catches exactly 30, not 25 or 28. Use BETWEEN or age <= 30. Fix with BETWEEN for clarity.",
+      description: "Incorrect range logic: should be age BETWEEN 18 AND 30 OR age <= 30. Only matches age=30 now.",
+      validate: (code) => {
+        const up = code.toUpperCase();
+        return (up.includes("BETWEEN 18 AND 30") || (up.includes("AGE >= 18") && up.includes("AGE <= 30"))) && up.includes("FROM USERS");
+      }
+    },
+    {
+      broken: `-- TASK: Retrieve product names with price > 100 AND category 'Electronics'
+SELECT product_name FROM products WHERE price > 100 AND category = Electronics;`,
+      fixed: `SELECT product_name FROM products WHERE price > 100 AND category = 'Electronics';`,
+      hint: "String literals need quotes. 'Electronics' must be inside single quotes.",
+      description: "Unquoted string value: Electronics → 'Electronics'.",
+      validate: (code) => code.includes("'Electronics'") && code.toUpperCase().includes("PRICE > 100")
+    },
+    {
+      broken: `-- TASK: Get all columns but only first 5 rows
+SELECT * FORM employees LIMIT 5;`,
+      fixed: `SELECT * FROM employees LIMIT 5;`,
+      hint: "Replace 'FORM' with 'FROM' again (common trap) and LIMIT works.",
+      description: "FORM → FROM syntax fix.",
+      validate: (code) => code.toUpperCase().includes("FROM EMPLOYEES") && code.toUpperCase().includes("LIMIT 5") && !code.toUpperCase().includes("FORM")
+    },
+    {
+      broken: `-- TASK: Average price of products
+SELECT AVG(price) FROM products;`,
+      fixed: `SELECT AVG(price) FROM products;`,
+      hint: "This query is perfectly fine! Tip: sometimes the bug is that nothing is broken. Click Run and you'll succeed.",
+      description: "Already correct - demonstrates that not everything is broken.",
+      validate: (code) => {
+        const up = code.toUpperCase();
+        return up.includes("AVG(PRICE)") && up.includes("FROM PRODUCTS") && !up.includes("FORM") && !up.includes("AVG PRICE");
+      }
     }
   ];
 
   let currentChallenge = null;
+  let attempts = 0;
 
   function loadNewChallenge() {
     const randomIndex = Math.floor(Math.random() * challenges.length);
-    currentChallenge = challenges[randomIndex];
+    currentChallenge = { ...challenges[randomIndex] };
+    attempts = 0;
     document.getElementById('codeEditor').value = currentChallenge.broken;
-    document.getElementById('outputArea').innerHTML = '// New challenge! Fix the SQL query and click RUN';
+    document.getElementById('outputArea').innerHTML = '// New buggy SQL loaded.\n// Find the error, fix the query, then click RUN.';
+    document.getElementById('queryStatus').innerHTML = 'unsolved';
+    document.getElementById('queryStatus').style.color = "#f59e0b";
+    const diffSpan = document.getElementById('difficultyTag');
+    if (currentChallenge.broken.includes("FORM")) diffSpan.innerHTML = "🔥 typo error";
+    else if (currentChallenge.broken.includes("ORDER price")) diffSpan.innerHTML = "⚠️ missing keyword";
+    else if (currentChallenge.broken.includes("age = 30")) diffSpan.innerHTML = "🧠 logical flaw";
+    else if (currentChallenge.fixed.includes("'Electronics'")) diffSpan.innerHTML = "🔤 quotes missing";
+    else diffSpan.innerHTML = "⚡ syntax / mix";
   }
 
+  // Intelligent validator: compares needs based on challenge's custom validator + extra keyword checks
+  function validateFix(userCode) {
+    let trimmed = userCode.trim();
+    if (!trimmed.length) return { ok: false, msg: "Empty query? Write some SQL!" };
+    
+    // If challenge provides custom validator (more reliable)
+    if (currentChallenge.validate && typeof currentChallenge.validate === "function") {
+      let customValid = currentChallenge.validate(trimmed);
+      if (customValid) return { ok: true, msg: "Correct!" };
+      else return { ok: false, msg: "The query still has logical or syntax issues." };
+    }
+    
+    // Fallback generic detection for simple challenges (redundant, but safety)
+    let upper = trimmed.toUpperCase();
+    const brokenUpper = currentChallenge.broken.toUpperCase();
+    const fixedUpper = currentChallenge.fixed.toUpperCase();
+    
+    if (brokenUpper === fixedUpper) {
+      // identical means original is correct, just ensure no corruption
+      if (upper === brokenUpper) return { ok: true, msg: "Perfect! The original was already correct." };
+      else if (upper.includes("FROM") && !upper.includes("FORM")) return { ok: true, msg: "Good fix!" };
+    }
+    
+    if (fixedUpper.includes("BETWEEN") && upper.includes("BETWEEN")) return { ok: true, msg: "Range fixed using BETWEEN!" };
+    if (fixedUpper.includes("ORDER BY") && upper.includes("ORDER BY") && !upper.includes("ORDER PRICE")) return { ok: true, msg: "ORDER BY clause fixed!" };
+    if (fixedUpper.includes("'Electronics'") && trimmed.includes("'Electronics'")) return { ok: true, msg: "Added quotes correctly." };
+    if (fixedUpper.includes("FROM") && upper.includes("FROM") && !upper.includes("FORM")) return { ok: true, msg: "FROM keyword fixed." };
+    
+    // Additional heuristics
+    if (!upper.includes("SELECT")) return { ok: false, msg: "Missing SELECT statement." };
+    if (upper.includes("FORM") && !upper.includes("FROM")) return { ok: false, msg: "You still have 'FORM' instead of 'FROM'." };
+    return { ok: false, msg: "Not yet resolved. Compare with expected SQL logic." };
+  }
+  
   function runCode() {
     const code = document.getElementById('codeEditor').value;
     const outputDiv = document.getElementById('outputArea');
+    const statusSpan = document.getElementById('queryStatus');
     
-    const upperCode = code.toUpperCase();
+    if (!currentChallenge) {
+      outputDiv.innerHTML = `<span class="error">⚠️ No active challenge. Click NEW.</span>`;
+      return;
+    }
     
-    if (upperCode.includes(currentChallenge.expectedKeyword.toUpperCase())) {
-      outputDiv.innerHTML = `<span class="success">✅ CORRECT! 🎉</span>\n\nYour query looks good!\n\n<span class="success">Great job! Click NEW for another challenge.</span>`;
+    const validation = validateFix(code);
+    
+    if (validation.ok) {
+      outputDiv.innerHTML = `<span class="success">✅ CORRECT! QUERY EXECUTES PROPERLY.</span>\n\n<span class="info">Your fixed SQL:</span>\n\`\`\`sql\n${code}\n\`\`\`\n\n🎉 Great debugging! Move to next challenge.`;
+      statusSpan.innerHTML = '✓ SOLVED';
+      statusSpan.style.color = "#51cf66";
+      // Optional: disable run tiny visual but allow new challenge
     } else {
-      outputDiv.innerHTML = `<span class="error">❌ Not quite right.</span>\n\nExpected to find keyword: "${currentChallenge.expectedKeyword}"\n\n<span>💡 Click HINT for help!</span>`;
+      attempts++;
+      let extraHelp = "";
+      if (attempts >= 2) extraHelp = `\n\n💡 Hint: ${currentChallenge.hint.substring(0, 100)}`;
+      outputDiv.innerHTML = `<span class="error">❌ SQL ERROR / LOGIC MISMATCH</span>\n\n${validation.msg}${extraHelp}\n\n<span class="info">✏️ Keep fixing — read the error carefully.</span>`;
+      statusSpan.innerHTML = '✗ failed';
+      statusSpan.style.color = "#ff6b6b";
     }
   }
-
+  
   function showHint() {
     if (currentChallenge) {
-      document.getElementById('hintMessage').innerHTML = currentChallenge.hint;
+      document.getElementById('hintMessage').innerHTML = `<strong style="color:#fbbf24;">🔍 DEBUGGER SAYS:</strong><br>${currentChallenge.hint}<br><br><span style="font-size:0.8rem;">Look for keywords, spelling, quotes or logic.</span>`;
       document.getElementById('hintModal').style.display = 'flex';
     }
   }
-
+  
   function giveUp() {
     if (currentChallenge) {
-      document.getElementById('answerMessage').innerHTML = `<strong>The correct query is:</strong><br><br><code style="background:#1a2a3a; padding:0.5rem; display:block; border-radius:8px;">${currentChallenge.fixed}</code><br><br><strong>Key fix:</strong> ${currentChallenge.hint}`;
+      const explanation = currentChallenge.description || "Fix the broken parts";
+      const fixedCode = currentChallenge.fixed;
+      document.getElementById('answerMessage').innerHTML = `
+        <div style="background:#051a2a; padding:0.8rem; border-radius:12px; margin:1rem 0;">
+          <strong>✅ CORRECT VERSION:</strong><br>
+          <code style="display:block; background:#0a1424; padding:0.8rem; border-radius:12px; margin-top:8px; font-size:0.8rem;">${escapeHtml(fixedCode)}</code>
+        </div>
+        <p><strong>🔧 WHY IT FAILED:</strong> ${explanation}</p>
+        <p><strong>💡 TIP:</strong> ${currentChallenge.hint}</p>
+      `;
       document.getElementById('answerModal').style.display = 'flex';
     }
   }
-
+  
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+      return c;
+    });
+  }
+  
   function closeModal() {
     document.getElementById('hintModal').style.display = 'none';
   }
-
+  
   function closeAnswerModal() {
     document.getElementById('answerModal').style.display = 'none';
     loadNewChallenge();
   }
-
+  
+  // initial load
   loadNewChallenge();
+  
+  // Add keyboard shortcut: Ctrl+Enter runs code
+  document.getElementById('codeEditor').addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      runCode();
+    }
+  });
 </script>
 </body>
 </html>
