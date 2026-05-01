@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JavaScript · Solve the Code</title>
+  <title>JavaScript · Solve the Code — Smart Debugging</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -83,6 +83,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
     .badge {
       background: rgba(0,212,255,0.2);
@@ -91,9 +92,16 @@
       font-size: 0.7rem;
       font-family: 'JetBrains Mono', monospace;
     }
+    .status-badge {
+      font-size: 0.7rem;
+      background: rgba(0,212,255,0.15);
+      border-radius: 30px;
+      padding: 0.2rem 0.6rem;
+      margin-left: 0.5rem;
+    }
     textarea {
       width: 100%;
-      height: 350px;
+      height: 380px;
       background: #0a1424;
       border: 1px solid rgba(0,212,255,0.3);
       border-radius: 12px;
@@ -102,6 +110,7 @@
       font-size: 0.85rem;
       color: #e2eaf4;
       resize: vertical;
+      line-height: 1.5;
     }
     textarea:focus {
       outline: none;
@@ -122,7 +131,9 @@
       font-weight: 600;
       color: #fff;
       cursor: pointer;
+      transition: 0.2s;
     }
+    .run-btn:hover { opacity: 0.9; transform: translateY(-2px); }
     .hint-btn {
       background: rgba(245,158,11,0.2);
       border: 1px solid #f59e0b;
@@ -131,7 +142,9 @@
       font-family: 'JetBrains Mono', monospace;
       color: #f59e0b;
       cursor: pointer;
+      transition: 0.2s;
     }
+    .hint-btn:hover { background: rgba(245,158,11,0.4); }
     .giveup-btn {
       background: rgba(255,107,107,0.2);
       border: 1px solid #ff6b6b;
@@ -141,6 +154,7 @@
       color: #ff6b6b;
       cursor: pointer;
     }
+    .giveup-btn:hover { background: rgba(255,107,107,0.4); }
     .new-btn {
       background: transparent;
       border: 1px solid #00d4ff;
@@ -150,19 +164,23 @@
       color: #00d4ff;
       cursor: pointer;
     }
+    .new-btn:hover { background: rgba(0,212,255,0.2); }
     .output {
       background: #0a1424;
       border-radius: 12px;
       padding: 1rem;
-      min-height: 350px;
+      min-height: 380px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.85rem;
       white-space: pre-wrap;
       word-break: break-word;
+      overflow-y: auto;
+      max-height: 500px;
     }
-    .error { color: #ff6b6b; }
-    .success { color: #51cf66; }
-    .hint-text { color: #f59e0b; }
+    .error { color: #ff6b6b; font-weight: 500; }
+    .success { color: #51cf66; font-weight: 500; }
+    .warning { color: #f59e0b; }
+    .info { color: #74c0fc; }
     .modal {
       display: none;
       position: fixed;
@@ -170,27 +188,42 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(8px);
     }
     .modal-content {
       background: #0d1e30;
       border: 1px solid #00d4ff;
       border-radius: 20px;
       padding: 2rem;
-      max-width: 500px;
+      max-width: 550px;
       margin: 1rem;
       text-align: center;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.5);
     }
     .modal-content button {
-      margin-top: 1rem;
-      padding: 0.5rem 1.5rem;
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.8rem;
       background: #00d4ff;
       border: none;
-      border-radius: 10px;
+      border-radius: 30px;
       cursor: pointer;
+      font-weight: bold;
+    }
+    .modal-content code {
+      background: #1e2a3a;
+      padding: 0.8rem;
+      display: block;
+      border-radius: 12px;
+      text-align: left;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      overflow-x: auto;
     }
     @media (max-width: 900px) {
       .game-panel { grid-template-columns: 1fr; }
@@ -201,31 +234,37 @@
 <body>
 <div class="container">
   <div class="topbar">
-    <div class="logo">⚡ JAVASCRIPT · DEBUG ARENA</div>
+    <div class="logo">⚡ JAVASCRIPT · DEBUG ARENA — SMART FEEDBACK</div>
     <a href="solvinggame.html" class="back-btn">← Change Language</a>
   </div>
   <div class="game-panel">
     <div class="code-section">
-      <div class="section-title"><span>🔧 FIX THE CODE</span><span class="badge">easy mode</span></div>
-      <textarea id="codeEditor" spellcheck="false"></textarea>
+      <div class="section-title">
+        <span>🔧 FIX THE CODE</span>
+        <span class="badge">fix & run</span>
+      </div>
+      <textarea id="codeEditor" spellcheck="false" placeholder="// JavaScript code with bugs — fix it and press RUN"></textarea>
       <div class="button-group">
-        <button class="run-btn" onclick="runCode()">▶ RUN CODE</button>
-        <button class="hint-btn" onclick="showHint()">💡 HINT</button>
-        <button class="giveup-btn" onclick="giveUp()">🏳️ GIVE UP</button>
-        <button class="new-btn" onclick="loadNewChallenge()">🎲 NEW</button>
+        <button class="run-btn" id="runButton">▶ RUN CODE</button>
+        <button class="hint-btn" id="hintButton">💡 HINT</button>
+        <button class="giveup-btn" id="giveupButton">🏳️ GIVE UP</button>
+        <button class="new-btn" id="newButton">🎲 NEW</button>
       </div>
     </div>
     <div class="output-section">
-      <div class="section-title"><span>📟 OUTPUT</span><span class="badge">result</span></div>
-      <div class="output" id="outputArea">// Click RUN to test your code</div>
+      <div class="section-title">
+        <span>📟 OUTPUT & VALIDATION</span>
+        <span class="status-badge" id="statusBadge">waiting</span>
+      </div>
+      <div class="output" id="outputArea">// Click RUN to test your fixed JavaScript code</div>
     </div>
   </div>
 </div>
 
 <div id="hintModal" class="modal">
   <div class="modal-content">
-    <h3>💡 HINT</h3>
-    <p id="hintMessage"></p>
+    <h3>💡 DEBUG HINT</h3>
+    <p id="hintMessage" style="margin-top: 1rem;"></p>
     <button onclick="closeModal()">Got it!</button>
   </div>
 </div>
@@ -233,16 +272,16 @@
 <div id="answerModal" class="modal">
   <div class="modal-content">
     <h3>📖 SOLUTION</h3>
-    <p id="answerMessage"></p>
-    <button onclick="closeAnswerModal()">Try Next →</button>
+    <div id="answerMessage" style="text-align: left;"></div>
+    <button onclick="closeAnswerModal()">Next Challenge →</button>
   </div>
 </div>
 
 <script>
   // ============================================================
-  // UPDATED CHALLENGES: Real beginner errors (not just semicolons)
-  // Includes: missing parentheses, mismatched brackets, undefined variables,
-  // wrong assignment, typos in variable names, missing quotes, etc.
+  // JAVASCRIPT CHALLENGES — real beginner bugs
+  // Each challenge includes validation + specific error messages
+  // Updated to track solved/unsolved status with visual badge
   // ============================================================
   const challenges = [
     {
@@ -250,7 +289,11 @@
 console.log("Hello World"`,
       fixed: `console.log("Hello World");`,
       hint: "🔍 Every opening parenthesis ( needs a closing ). Also add a semicolon at the end!",
-      expectedOutput: "Hello World"
+      expectedOutput: "Hello World",
+      validation: (code, output) => {
+        return output.trim() === "Hello World" && code.includes('console.log("Hello World")');
+      },
+      specificErrorHint: "Missing closing parenthesis! Add ')' after 'Hello World'."
     },
     {
       broken: `// 🐞 Add two numbers and show result (missing semicolon + typo)
@@ -263,30 +306,36 @@ let num2 = 5;
 let total = num1 + num2;
 console.log(total);`,
       hint: "⚠️ Two problems: missing semicolons AND console.lg should be console.log",
-      expectedOutput: "15"
+      expectedOutput: "15",
+      validation: (code, output) => output.trim() === "15" && code.includes('console.log'),
+      specificErrorHint: "Missing semicolons and typo: 'console.lg' → 'console.log'"
     },
     {
-      broken: `// 🐞 Function should return "Hello Alex" (missing return semicolon & missing closing brace)
+      broken: `// 🐞 Function should return "Hello Alex" (missing return semicolon & missing call)
 function greet(name) {
   return "Hello " + name
-`,
+}
+console.log(greet("Alex"));`,
       fixed: `function greet(name) {
   return "Hello " + name;
 }
 console.log(greet("Alex"));`,
-      hint: "🧩 Missing closing curly brace } AND semicolon after return. Also need to call the function!",
-      expectedOutput: "Hello Alex"
+      hint: "🧩 Missing semicolon after return statement! The call is actually there, just add ;",
+      expectedOutput: "Hello Alex",
+      validation: (code, output) => output.trim() === "Hello Alex" && code.includes('return "Hello '),
+      specificErrorHint: "Missing semicolon after 'return \"Hello \" + name'"
     },
     {
-      broken: `// 🐞 Loop from 1 to 3 (missing curly braces + semicolon)
+      broken: `// 🐞 Loop from 1 to 3 (missing curly braces)
 for (let i = 1; i <= 3; i++)
-  console.log(i)
-}`,
+  console.log(i)`,
       fixed: `for (let i = 1; i <= 3; i++) {
   console.log(i);
 }`,
-      hint: "💡 The for loop needs { } to wrap the body, and a semicolon after console.log",
-      expectedOutput: "1\n2\n3"
+      hint: "💡 The for loop should use { } brackets even for single statements to avoid issues.",
+      expectedOutput: "1\n2\n3",
+      validation: (code, output) => output.trim() === "1\n2\n3",
+      specificErrorHint: "Wrap the loop body in curly braces { }"
     },
     {
       broken: `// 🐞 Check positive number (undefined variable mistake)
@@ -299,16 +348,20 @@ if (score > 0) {
   console.log("Positive");
 }`,
       hint: "✏️ Variable name typo: 'scor' is not defined. It should be 'score'",
-      expectedOutput: "Positive"
+      expectedOutput: "Positive",
+      validation: (code, output) => output.trim() === "Positive" && code.includes('score > 0'),
+      specificErrorHint: "Variable name typo: 'scor' should be 'score'"
     },
     {
-      broken: `// 🐞 Create array and print second fruit (wrong bracket + missing semicolon)
+      broken: `// 🐞 Create array and print second fruit (missing closing bracket)
 let fruits = ["apple", "banana", "cherry"
 console.log(fruits[1])`,
       fixed: `let fruits = ["apple", "banana", "cherry"];
 console.log(fruits[1]);`,
       hint: "🔧 Missing closing ] for array AND missing semicolon. Check brackets carefully!",
-      expectedOutput: "banana"
+      expectedOutput: "banana",
+      validation: (code, output) => output.trim() === "banana" && code.includes('"cherry"]'),
+      specificErrorHint: "Missing closing bracket ']' after 'cherry'"
     },
     {
       broken: `// 🐞 Capitalize first letter (missing .toUpperCase parentheses)
@@ -319,7 +372,9 @@ console.log(capitalized);`,
 let capitalized = word[0].toUpperCase() + word.slice(1);
 console.log(capitalized);`,
       hint: "⚠️ .toUpperCase is a method, needs parentheses () → .toUpperCase()",
-      expectedOutput: "Cat"
+      expectedOutput: "Cat",
+      validation: (code, output) => output.trim() === "Cat" && code.includes('.toUpperCase()'),
+      specificErrorHint: "Add parentheses: .toUpperCase() instead of .toUpperCase"
     },
     {
       broken: `// 🐞 While loop (missing increment operator)
@@ -334,7 +389,9 @@ while (count <= 3) {
   count++;
 }`,
       hint: "🔄 Infinite loop! You need to increment 'count' inside the loop (count++ or count = count + 1)",
-      expectedOutput: "1\n2\n3"
+      expectedOutput: "1\n2\n3",
+      validation: (code, output) => output.trim() === "1\n2\n3" && (code.includes('count++') || code.includes('count = count + 1')),
+      specificErrorHint: "Add count++ inside the loop to prevent infinite loop"
     },
     {
       broken: `// 🐞 Multiply and log (string vs number issue)
@@ -346,21 +403,25 @@ console.log("Total: " + total);`,
 let quantity = 3;
 let total = price * quantity;
 console.log("Total: " + total);`,
-      hint: "🧮 Price is a string \"10\" but multiplication works anyway. Real bug? Try using Number(price) or remove quotes. The fix makes it a number for clarity.",
-      expectedOutput: "Total: 30"
+      hint: "🧮 Price as string \"10\" works but is confusing. Remove quotes to make it a number.",
+      expectedOutput: "Total: 30",
+      validation: (code, output) => output.trim() === "Total: 30" && code.includes('let price = 10;'),
+      specificErrorHint: "Remove quotes from price: 'let price = 10;' not \"10\""
     },
     {
-      broken: `// 🐞 Function expression (missing semicolon and wrong variable)
+      broken: `// 🐞 Function expression (missing call parentheses)
 const sayHi = function() {
-  return "Hi there!"
-}
+  return "Hi there!";
+};
 console.log(sayHi)`,
       fixed: `const sayHi = function() {
   return "Hi there!";
 };
 console.log(sayHi());`,
-      hint: "🎯 Two errors: missing semicolon after function expression, and you need to CALL sayHi() not just sayHi",
-      expectedOutput: "Hi there!"
+      hint: "🎯 You need to CALL sayHi() with parentheses, not just sayHi",
+      expectedOutput: "Hi there!",
+      validation: (code, output) => output.trim() === "Hi there!" && code.includes('sayHi()'),
+      specificErrorHint: "Call the function: sayHi() instead of sayHi"
     },
     {
       broken: `// 🐞 If statement (using assignment instead of comparison)
@@ -373,26 +434,35 @@ if (age === 18) {
   console.log("You are 18");
 }`,
       hint: "⚠️ = is assignment, === is comparison. Use === to check equality!",
-      expectedOutput: "You are 18"
+      expectedOutput: "You are 18",
+      validation: (code, output) => output.trim() === "You are 18" && code.includes('=== 18'),
+      specificErrorHint: "Use '===' for comparison, not '=' (assignment)"
     },
     {
       broken: `// 🐞 Object property access (missing quotes)
 let person = { name: "Alice", age: 25 };
 console.log(person[name]);`,
       fixed: `let person = { name: "Alice", age: 25 };
-console.log(person["name"]); // or person.name`,
+console.log(person.name); // or person["name"]`,
       hint: "🔑 To access property 'name', use person.name or person['name'] (with quotes). person[name] looks for variable 'name'",
-      expectedOutput: "Alice"
+      expectedOutput: "Alice",
+      validation: (code, output) => output.trim() === "Alice" && (code.includes('.name') || code.includes('["name"]')),
+      specificErrorHint: "Use person.name or person['name'] instead of person[name]"
     }
   ];
 
   let currentChallenge = null;
+  let currentSolved = false;
 
   function loadNewChallenge() {
     const randomIndex = Math.floor(Math.random() * challenges.length);
-    currentChallenge = challenges[randomIndex];
+    currentChallenge = { ...challenges[randomIndex] };
+    currentSolved = false;
     document.getElementById('codeEditor').value = currentChallenge.broken;
-    document.getElementById('outputArea').innerHTML = '// New challenge! Fix the bug and click RUN';
+    document.getElementById('outputArea').innerHTML = '// New challenge! Find the JavaScript bug and click RUN';
+    document.getElementById('statusBadge').innerHTML = 'unsolved';
+    document.getElementById('statusBadge').style.color = "#f59e0b";
+    document.getElementById('statusBadge').style.background = "rgba(245,158,11,0.2)";
   }
 
   function runCode() {
@@ -400,12 +470,15 @@ console.log(person["name"]); // or person.name`,
       loadNewChallenge();
       return;
     }
+    
     const code = document.getElementById('codeEditor').value;
     const outputDiv = document.getElementById('outputArea');
+    const statusSpan = document.getElementById('statusBadge');
     
     let output = '';
     let error = null;
     
+    // Capture console.log output
     const originalLog = console.log;
     console.log = function(...args) {
       output += args.map(arg => {
@@ -422,17 +495,29 @@ console.log(person["name"]); // or person.name`,
       func();
       console.log = originalLog;
       
-      const expectedRaw = currentChallenge.expectedOutput;
-      let outputTrimmed = output.trim();
-      // Handle multi-line expected outputs (like 1\n2\n3)
-      const normalize = (str) => str.trim().split('\n').filter(l => l !== '').join('\n');
-      const normalizedOutput = normalize(outputTrimmed);
-      const normalizedExpected = normalize(expectedRaw);
+      const normalizedOutput = output.trim();
+      const normalizedExpected = currentChallenge.expectedOutput.trim();
       
-      if (normalizedOutput === normalizedExpected) {
-        outputDiv.innerHTML = `<span class="success">✅ PERFECT! 🎉 You fixed the bug!</span>\n\n📤 Your output:\n${output || '(empty)'}\n<span class="success">Great job! Click NEW for another challenge.</span>`;
+      // Use challenge's validation or direct output comparison
+      let isCorrect = false;
+      if (currentChallenge.validation) {
+        isCorrect = currentChallenge.validation(code, normalizedOutput);
       } else {
-        outputDiv.innerHTML = `<span>📤 Your Output:</span>\n${output || '(no output)'}\n\n<span style="color: #f59e0b;">❌ Not quite right.</span>\n<span>🎯 Expected:</span> "${expectedRaw}"\n\n💡 Click HINT for help!`;
+        isCorrect = (normalizedOutput === normalizedExpected);
+      }
+      
+      if (isCorrect) {
+        currentSolved = true;
+        outputDiv.innerHTML = `<span class="success">✅ PERFECT! 🎉 You fixed the JavaScript bug!</span>\n\n📤 Your output:\n${output || '(empty)'}\n\n<span class="success">Great job! Click NEW for another challenge.</span>`;
+        statusSpan.innerHTML = '✓ SOLVED';
+        statusSpan.style.color = "#51cf66";
+        statusSpan.style.background = "rgba(81,207,102,0.2)";
+      } else {
+        currentSolved = false;
+        outputDiv.innerHTML = `<span class="warning">❌ Not quite right.</span>\n\n📤 Your Output:\n${output || '(no output)'}\n\n🎯 Expected:\n${currentChallenge.expectedOutput}\n\n<span class="info">💡 ${currentChallenge.specificErrorHint || currentChallenge.hint}</span>`;
+        statusSpan.innerHTML = '✗ FAILED';
+        statusSpan.style.color = "#ff6b6b";
+        statusSpan.style.background = "rgba(255,107,107,0.2)";
       }
     } catch (err) {
       console.log = originalLog;
@@ -442,22 +527,33 @@ console.log(person["name"]); // or person.name`,
       } else if (friendlyError.includes("is not defined")) {
         friendlyError = "ReferenceError: " + friendlyError + " — check variable spelling!";
       } else if (friendlyError.includes("Unexpected token")) {
-        friendlyError = "SyntaxError: Maybe missing semicolon, comma, or bracket? Look carefully!";
+        friendlyError = "SyntaxError: Missing semicolon, comma, or bracket? Look carefully!";
       }
-      outputDiv.innerHTML = `<span class="error">❌ ERROR: ${friendlyError}</span>\n\n💡 Click HINT for help fixing this!`;
+      outputDiv.innerHTML = `<span class="error">❌ ERROR: ${friendlyError}</span>\n\n<span class="info">💡 ${currentChallenge.specificErrorHint || currentChallenge.hint}</span>`;
+      statusSpan.innerHTML = '✗ ERROR';
+      statusSpan.style.color = "#ff6b6b";
+      statusSpan.style.background = "rgba(255,107,107,0.2)";
     }
   }
 
   function showHint() {
     if (currentChallenge) {
-      document.getElementById('hintMessage').innerHTML = currentChallenge.hint;
+      document.getElementById('hintMessage').innerHTML = `<strong style="color:#fbbf24;">⚡ JAVASCRIPT DEBUGGER SAYS:</strong><br><br>${currentChallenge.hint}<br><br><span class="info">🔍 Look at the line with the // 🐞 comment for context.</span>`;
       document.getElementById('hintModal').style.display = 'flex';
     }
   }
 
   function giveUp() {
     if (currentChallenge) {
-      document.getElementById('answerMessage').innerHTML = `<strong>✅ The correct fixed code:</strong><br><br><code style="background:#1a2a3a; padding:0.5rem; display:block; border-radius:8px; text-align:left;">${escapeHtml(currentChallenge.fixed)}</code><br><br><strong>Expected output:</strong> "${currentChallenge.expectedOutput}"<br><br>Study the fix and try the next challenge!`;
+      document.getElementById('answerMessage').innerHTML = `
+        <strong>✅ Corrected JavaScript code:</strong>
+        <code>${escapeHtml(currentChallenge.fixed)}</code>
+        <strong>📤 Expected output:</strong>
+        <code style="background:#1e2a3a; padding:0.5rem; margin-top:0.5rem;">${currentChallenge.expectedOutput}</code>
+        <strong>🔍 What was wrong:</strong>
+        <p style="margin-top:0.5rem;">${currentChallenge.hint}</p>
+        <p class="info">Study the fix and try the next challenge!</p>
+      `;
       document.getElementById('answerModal').style.display = 'flex';
     }
   }
@@ -468,7 +564,7 @@ console.log(person["name"]); // or person.name`,
       if (m === '<') return '&lt;';
       if (m === '>') return '&gt;';
       return m;
-    });
+    }).replace(/\n/g, '<br>');
   }
 
   function closeModal() {
@@ -480,8 +576,63 @@ console.log(person["name"]); // or person.name`,
     loadNewChallenge();
   }
 
-  // Initialize first challenge
-  loadNewChallenge();
+  // Set up event listeners with safe binding
+  function setupEventListeners() {
+    const runBtn = document.getElementById('runButton');
+    const hintBtn = document.getElementById('hintButton');
+    const giveupBtn = document.getElementById('giveupButton');
+    const newBtn = document.getElementById('newButton');
+    
+    if (runBtn) {
+      const newRunBtn = runBtn.cloneNode(true);
+      runBtn.parentNode.replaceChild(newRunBtn, runBtn);
+      newRunBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        runCode();
+      });
+    }
+    
+    if (hintBtn) {
+      const newHintBtn = hintBtn.cloneNode(true);
+      hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
+      newHintBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showHint();
+      });
+    }
+    
+    if (giveupBtn) {
+      const newGiveupBtn = giveupBtn.cloneNode(true);
+      giveupBtn.parentNode.replaceChild(newGiveupBtn, giveupBtn);
+      newGiveupBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        giveUp();
+      });
+    }
+    
+    if (newBtn) {
+      const newNewBtn = newBtn.cloneNode(true);
+      newBtn.parentNode.replaceChild(newNewBtn, newBtn);
+      newNewBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        loadNewChallenge();
+      });
+    }
+  }
+
+  // Initialize
+  window.addEventListener('DOMContentLoaded', () => {
+    loadNewChallenge();
+    setupEventListeners();
+  });
+  
+  // Expose functions as fallback
+  window.runCode = runCode;
+  window.showHint = showHint;
+  window.giveUp = giveUp;
+  window.loadNewChallenge = loadNewChallenge;
+  window.closeModal = closeModal;
+  window.closeAnswerModal = closeAnswerModal;
 </script>
 </body>
 </html>
