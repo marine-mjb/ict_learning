@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Java · Solve the Code</title>
+  <title>Java · Solve the Code — Smart Debugging</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -83,6 +83,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
     .badge {
       background: rgba(0,212,255,0.2);
@@ -91,9 +92,16 @@
       font-size: 0.7rem;
       font-family: 'JetBrains Mono', monospace;
     }
+    .status-badge {
+      font-size: 0.7rem;
+      background: rgba(0,212,255,0.15);
+      border-radius: 30px;
+      padding: 0.2rem 0.6rem;
+      margin-left: 0.5rem;
+    }
     textarea {
       width: 100%;
-      height: 350px;
+      height: 380px;
       background: #0a1424;
       border: 1px solid rgba(0,212,255,0.3);
       border-radius: 12px;
@@ -102,6 +110,7 @@
       font-size: 0.85rem;
       color: #e2eaf4;
       resize: vertical;
+      line-height: 1.5;
     }
     textarea:focus {
       outline: none;
@@ -122,7 +131,9 @@
       font-weight: 600;
       color: #fff;
       cursor: pointer;
+      transition: 0.2s;
     }
+    .run-btn:hover { opacity: 0.9; transform: translateY(-2px); }
     .hint-btn {
       background: rgba(245,158,11,0.2);
       border: 1px solid #f59e0b;
@@ -131,7 +142,9 @@
       font-family: 'JetBrains Mono', monospace;
       color: #f59e0b;
       cursor: pointer;
+      transition: 0.2s;
     }
+    .hint-btn:hover { background: rgba(245,158,11,0.4); }
     .giveup-btn {
       background: rgba(255,107,107,0.2);
       border: 1px solid #ff6b6b;
@@ -141,6 +154,7 @@
       color: #ff6b6b;
       cursor: pointer;
     }
+    .giveup-btn:hover { background: rgba(255,107,107,0.4); }
     .new-btn {
       background: transparent;
       border: 1px solid #00d4ff;
@@ -150,18 +164,23 @@
       color: #00d4ff;
       cursor: pointer;
     }
+    .new-btn:hover { background: rgba(0,212,255,0.2); }
     .output {
       background: #0a1424;
       border-radius: 12px;
       padding: 1rem;
-      min-height: 350px;
+      min-height: 380px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.85rem;
       white-space: pre-wrap;
+      word-break: break-word;
+      overflow-y: auto;
+      max-height: 500px;
     }
-    .error { color: #ff6b6b; }
-    .success { color: #51cf66; }
+    .error { color: #ff6b6b; font-weight: 500; }
+    .success { color: #51cf66; font-weight: 500; }
     .warning { color: #f59e0b; }
+    .info { color: #74c0fc; }
     .modal {
       display: none;
       position: fixed;
@@ -169,61 +188,83 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(8px);
     }
     .modal-content {
       background: #0d1e30;
       border: 1px solid #00d4ff;
       border-radius: 20px;
       padding: 2rem;
-      max-width: 500px;
+      max-width: 550px;
       margin: 1rem;
       text-align: center;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.5);
     }
     .modal-content button {
-      margin-top: 1rem;
-      padding: 0.5rem 1.5rem;
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.8rem;
       background: #00d4ff;
       border: none;
-      border-radius: 10px;
+      border-radius: 30px;
       cursor: pointer;
+      font-weight: bold;
+    }
+    .modal-content code {
+      background: #1e2a3a;
+      padding: 0.8rem;
+      display: block;
+      border-radius: 12px;
+      text-align: left;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      overflow-x: auto;
     }
     @media (max-width: 900px) {
       .game-panel { grid-template-columns: 1fr; }
+      .container { padding: 1rem; }
     }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="topbar">
-    <div class="logo">☕ JAVA · DEBUG ARENA</div>
+    <div class="logo">☕ JAVA · DEBUG ARENA — SMART FEEDBACK</div>
     <a href="solvinggame.html" class="back-btn">← Change Language</a>
   </div>
   <div class="game-panel">
     <div class="code-section">
-      <div class="section-title"><span>☕ FIX THE CODE</span><span class="badge">easy mode</span></div>
-      <textarea id="codeEditor" spellcheck="false"></textarea>
+      <div class="section-title">
+        <span>☕ FIX THE CODE</span>
+        <span class="badge">fix & run</span>
+      </div>
+      <textarea id="codeEditor" spellcheck="false" placeholder="// Java code with bugs — fix it and press RUN"></textarea>
       <div class="button-group">
-        <button class="run-btn" onclick="runCode()">▶ RUN CODE</button>
-        <button class="hint-btn" onclick="showHint()">💡 HINT</button>
-        <button class="giveup-btn" onclick="giveUp()">🏳️ GIVE UP</button>
-        <button class="new-btn" onclick="loadNewChallenge()">🎲 NEW</button>
+        <button class="run-btn" id="runButton">▶ RUN CODE</button>
+        <button class="hint-btn" id="hintButton">💡 HINT</button>
+        <button class="giveup-btn" id="giveupButton">🏳️ GIVE UP</button>
+        <button class="new-btn" id="newButton">🎲 NEW</button>
       </div>
     </div>
     <div class="output-section">
-      <div class="section-title"><span>📟 OUTPUT</span><span class="badge">result</span></div>
-      <div class="output" id="outputArea">// Click RUN to test your code</div>
+      <div class="section-title">
+        <span>📟 OUTPUT & VALIDATION</span>
+        <span class="status-badge" id="statusBadge">waiting</span>
+      </div>
+      <div class="output" id="outputArea">// Click RUN to test your fixed Java code</div>
     </div>
   </div>
 </div>
 
 <div id="hintModal" class="modal">
   <div class="modal-content">
-    <h3>💡 HINT</h3>
-    <p id="hintMessage"></p>
+    <h3>💡 DEBUG HINT</h3>
+    <p id="hintMessage" style="margin-top: 1rem;"></p>
     <button onclick="closeModal()">Got it!</button>
   </div>
 </div>
@@ -231,13 +272,16 @@
 <div id="answerModal" class="modal">
   <div class="modal-content">
     <h3>📖 SOLUTION</h3>
-    <p id="answerMessage"></p>
-    <button onclick="closeAnswerModal()">Try Next →</button>
+    <div id="answerMessage" style="text-align: left;"></div>
+    <button onclick="closeAnswerModal()">Next Challenge →</button>
   </div>
 </div>
 
 <script>
-  // Common Java beginner mistakes - each challenge captures real-world "first bugs"
+  // ============================================================
+  // JAVA CHALLENGES — keeping original bugs but enhanced UI
+  // Each challenge includes validation + helpful error messages
+  // ============================================================
   const challenges = [
     {
       broken: `// 💣 BUG: Missing semicolon
@@ -247,11 +291,11 @@ System.out.println("Score: " + score)`,
 System.out.println("Score: " + score);`,
       hint: "Every statement in Java must end with a semicolon (;). Look at line 2 and 3!",
       expectedOutput: "Score: 100",
-      validate: (code) => {
-        if (!code.includes("int score = 100;")) return false;
-        if (!code.includes('System.out.println("Score: " + score);')) return false;
-        return true;
-      }
+      validation: (code) => {
+        return code.includes('int score = 100;') && 
+               code.includes('System.out.println("Score: " + score);');
+      },
+      specificErrorHint: "Missing semicolons! Add ';' after 'int score = 100' and after the println statement."
     },
     {
       broken: `// 💣 BUG: Case-sensitive error (String vs string)
@@ -261,10 +305,11 @@ System.out.println(message);`,
 System.out.println(message);`,
       hint: "Java is case-sensitive. The correct class name is 'String' with capital S, not 'string'.",
       expectedOutput: "Hello Java",
-      validate: (code) => {
+      validation: (code) => {
         return code.includes('String message = "Hello Java";') && 
                code.includes('System.out.println(message);');
-      }
+      },
+      specificErrorHint: "Java is case-sensitive! Use 'String' (capital S) not 'string'."
     },
     {
       broken: `// 💣 BUG: Uninitialized variable
@@ -276,11 +321,12 @@ count = count + 5;
 System.out.println(count);`,
       hint: "Local variables must be initialized before use. 'count' has no starting value!",
       expectedOutput: "5",
-      validate: (code) => {
+      validation: (code) => {
         return code.includes('int count = 0;') && 
                code.includes('count = count + 5;') &&
                code.includes('System.out.println(count);');
-      }
+      },
+      specificErrorHint: "Variable 'count' is uninitialized! Add '= 0' when declaring it."
     },
     {
       broken: `// 💣 BUG: Using '==' for string comparison
@@ -300,10 +346,11 @@ if (color1.equals(color2)) {
 }`,
       hint: "For Strings, avoid '=='. Use .equals() to compare content, not references.",
       expectedOutput: "Match",
-      validate: (code) => {
+      validation: (code) => {
         return code.includes('.equals(') && 
                code.includes('System.out.println("Match");');
-      }
+      },
+      specificErrorHint: "Don't use '==' for String comparison! Use .equals() method instead."
     },
     {
       broken: `// 💣 BUG: Array index out of bounds
@@ -314,9 +361,10 @@ System.out.println(numbers[3]);`,
 System.out.println(numbers[2]);`,
       hint: "Arrays start at index 0. The last valid index is length-1. Here length=3, so max index is 2.",
       expectedOutput: "30",
-      validate: (code) => {
+      validation: (code) => {
         return code.includes('numbers[2]') && !code.includes('numbers[3]');
-      }
+      },
+      specificErrorHint: "Array index out of bounds! Last valid index is 2 (since arrays start at 0)."
     },
     {
       broken: `// 💣 BUG: Missing quotes in string
@@ -326,9 +374,10 @@ System.out.println(greeting);`,
 System.out.println(greeting);`,
       hint: "String literals must be enclosed in double quotes (\" \").",
       expectedOutput: "Hello World",
-      validate: (code) => {
+      validation: (code) => {
         return code.includes('"Hello World"') && !code.includes('= Hello World');
-      }
+      },
+      specificErrorHint: "String literals need double quotes! Use \"Hello World\" instead."
     },
     {
       broken: `// 💣 BUG: Wrong concatenation for numbers
@@ -340,108 +389,180 @@ int y = 3;
 System.out.println("Sum = " + (x + y));`,
       hint: "String concatenation happens left to right. Use parentheses to force addition first.",
       expectedOutput: "Sum = 10",
-      validate: (code) => {
-        return code.includes('(x + y)');
-      }
+      validation: (code) => {
+        return code.includes('(x + y)') && code.includes('System.out.println("Sum = " + (x + y))');
+      },
+      specificErrorHint: "Wrong concatenation! Use parentheses: (x + y) to add numbers before string conversion."
     }
   ];
 
   let currentChallenge = null;
+  let currentSolved = false;
 
   function loadNewChallenge() {
     const randomIndex = Math.floor(Math.random() * challenges.length);
-    currentChallenge = challenges[randomIndex];
+    currentChallenge = { ...challenges[randomIndex] };
+    currentSolved = false;
     document.getElementById('codeEditor').value = currentChallenge.broken;
-    document.getElementById('outputArea').innerHTML = '// New challenge! Fix the Java code and click RUN';
+    document.getElementById('outputArea').innerHTML = '// New challenge! Find the Java bug and click RUN';
+    document.getElementById('statusBadge').innerHTML = 'unsolved';
+    document.getElementById('statusBadge').style.color = "#f59e0b";
+    document.getElementById('statusBadge').style.background = "rgba(245,158,11,0.2)";
+  }
+
+  // Simulate expected output based on fixed code patterns
+  function simulateExpectedOutput(code, challenge) {
+    if (code.includes('System.out.println("Score: ')) return "Score: 100";
+    if (code.includes('"Hello Java"')) return "Hello Java";
+    if (code.includes('count = 0') && code.includes('count = count + 5')) return "5";
+    if (code.includes('.equals(')) return "Match";
+    if (code.includes('numbers[2]')) return "30";
+    if (code.includes('"Hello World"')) return "Hello World";
+    if (code.includes('(x + y)')) return "Sum = 10";
+    return challenge.expectedOutput;
   }
 
   function runCode() {
-    const code = document.getElementById('codeEditor').value;
-    const outputDiv = document.getElementById('outputArea');
-    
-    // Remove comments to check actual code
-    const codeWithoutComments = code.replace(/\/\/.*$/gm, '').trim();
-    
-    if (!codeWithoutComments) {
-      outputDiv.innerHTML = `<span class="error">❌ No code found! Write your Java solution below.</span>`;
+    if (!currentChallenge) {
+      loadNewChallenge();
       return;
     }
     
-    // Check for common Java syntax errors first
-    const errors = [];
+    const code = document.getElementById('codeEditor').value;
+    const outputDiv = document.getElementById('outputArea');
+    const statusSpan = document.getElementById('statusBadge');
     
-    if (codeWithoutComments.includes('string ') && !codeWithoutComments.includes('String ')) {
-      errors.push('⚠️ Java is case-sensitive! Use "String" (capital S) not "string"');
-    }
+    // Run validation
+    const isStructurallyCorrect = currentChallenge.validation(code);
     
-    if (codeWithoutComments.match(/[a-zA-Z0-9_]\s*=[^=]/) && !codeWithoutComments.includes(';')) {
-      // This is too broad, let's do a more specific check
-    }
+    // Get simulated output for user feedback
+    const simulatedOutput = simulateExpectedOutput(code, currentChallenge);
+    const outputMatches = (simulatedOutput === currentChallenge.expectedOutput);
     
-    // Validate using the challenge's custom validator
-    try {
-      const isValid = currentChallenge.validate(code);
+    const isPerfect = isStructurallyCorrect && outputMatches;
+    
+    if (isPerfect) {
+      currentSolved = true;
+      outputDiv.innerHTML = `<span class="success">✅ CORRECT! 🎉 You fixed the Java bug!</span>\n\n📤 Program Output:\n${simulatedOutput}\n\n<span class="success">✨ Perfect! Click NEW for another challenge.</span>`;
+      statusSpan.innerHTML = '✓ SOLVED';
+      statusSpan.style.color = "#51cf66";
+      statusSpan.style.background = "rgba(81,207,102,0.2)";
+    } else {
+      currentSolved = false;
+      let helpfulError = "";
       
-      if (isValid) {
-        // Extract the expected output from the code by simulating Java logic
-        let simulatedOutput = "";
-        
-        // Special handling for different challenge types
-        if (code.includes('System.out.println')) {
-          if (code.includes('"Score: "') && code.includes('score')) {
-            simulatedOutput = "Score: 100";
-          } else if (code.includes('"Hello Java"')) {
-            simulatedOutput = "Hello Java";
-          } else if (code.includes('count = 0') || (code.includes('count = count + 5') && code.includes('count = 0'))) {
-            simulatedOutput = "5";
-          } else if (code.includes('.equals(')) {
-            simulatedOutput = "Match";
-          } else if (code.includes('numbers[2]')) {
-            simulatedOutput = "30";
-          } else if (code.includes('"Hello World"')) {
-            simulatedOutput = "Hello World";
-          } else if (code.includes('(x + y)')) {
-            simulatedOutput = "Sum = 10";
-          } else {
-            simulatedOutput = currentChallenge.expectedOutput;
-          }
-        } else {
-          simulatedOutput = currentChallenge.expectedOutput;
-        }
-        
-        outputDiv.innerHTML = `<span class="success">✅ CORRECT! 🎉</span>\n\n📤 Program Output:\n${simulatedOutput}\n\n<span class="success">✨ Perfect! You fixed the Java bug!</span>`;
+      if (!isStructurallyCorrect) {
+        helpfulError = currentChallenge.specificErrorHint || `The code still has structural errors. ${currentChallenge.hint.substring(0, 120)}`;
+      } else if (isStructurallyCorrect && !outputMatches) {
+        helpfulError = `Your code structure looks correct, but the output doesn't match.\n🎯 Expected: "${currentChallenge.expectedOutput}"\n📤 Your output: "${simulatedOutput}"\n\nDouble-check the logic!`;
       } else {
-        outputDiv.innerHTML = `<span class="warning">❌ NOT YET CORRECT</span>\n\n<span>📤 Your code doesn't produce the expected output.</span>\n\n<span style="color: #f59e0b;">🎯 Expected: "${currentChallenge.expectedOutput}"</span>\n\n<span style="color: #aaa;">💡 Tip: ${currentChallenge.hint}</span>`;
+        helpfulError = `Not yet correct. ${currentChallenge.hint}`;
       }
-    } catch (err) {
-      outputDiv.innerHTML = `<span class="error">❌ ERROR: ${err.message}</span>`;
+      
+      outputDiv.innerHTML = `<span class="error">❌ Still has bugs!</span>\n\n${helpfulError}\n\n<span class="info">💡 Click HINT for more help, or GIVE UP to see the solution.</span>`;
+      statusSpan.innerHTML = '✗ FAILED';
+      statusSpan.style.color = "#ff6b6b";
+      statusSpan.style.background = "rgba(255,107,107,0.2)";
     }
   }
 
   function showHint() {
     if (currentChallenge) {
-      document.getElementById('hintMessage').innerHTML = currentChallenge.hint;
+      document.getElementById('hintMessage').innerHTML = `<strong style="color:#fbbf24;">☕ JAVA DEBUGGER SAYS:</strong><br><br>${currentChallenge.hint}<br><br><span class="info">🔍 Look at the line with the // 💣 BUG comment for context.</span>`;
       document.getElementById('hintModal').style.display = 'flex';
     }
   }
 
   function giveUp() {
     if (currentChallenge) {
-      document.getElementById('answerMessage').innerHTML = `<strong>✅ Correct Java code:</strong><br><br><code style="background:#1a2a3a; padding:0.8rem; display:block; border-radius:8px; text-align:left; white-space:pre-wrap; font-family:'JetBrains Mono',monospace;">${currentChallenge.fixed}</code><br><br><span style="font-size:0.85rem;">📌 Expected output: <strong style="color:#51cf66;">${currentChallenge.expectedOutput}</strong></span><br><br><span style="font-size:0.85rem;">🔍 The bug was: ${currentChallenge.hint}</span>`;
+      document.getElementById('answerMessage').innerHTML = `
+        <strong>✅ Corrected Java code:</strong>
+        <code>${escapeHtml(currentChallenge.fixed)}</code>
+        <strong>📤 Expected output:</strong>
+        <code style="background:#1e2a3a; padding:0.5rem; margin-top:0.5rem;">${currentChallenge.expectedOutput}</code>
+        <strong>🔍 What was wrong:</strong>
+        <p style="margin-top:0.5rem;">${currentChallenge.hint}</p>
+        <p class="info">Study the fix and try the next challenge!</p>
+      `;
       document.getElementById('answerModal').style.display = 'flex';
     }
   }
 
-  function closeModal() { 
-    document.getElementById('hintModal').style.display = 'none'; 
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/\n/g, '<br>');
   }
-  
+
+  function closeModal() {
+    document.getElementById('hintModal').style.display = 'none';
+  }
+
   function closeAnswerModal() {
     document.getElementById('answerModal').style.display = 'none';
     loadNewChallenge();
   }
 
-  loadNewChallenge();
+  // Set up event listeners
+  function setupEventListeners() {
+    const runBtn = document.getElementById('runButton');
+    const hintBtn = document.getElementById('hintButton');
+    const giveupBtn = document.getElementById('giveupButton');
+    const newBtn = document.getElementById('newButton');
+    
+    if (runBtn) {
+      const newRunBtn = runBtn.cloneNode(true);
+      runBtn.parentNode.replaceChild(newRunBtn, runBtn);
+      newRunBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        runCode();
+      });
+    }
+    
+    if (hintBtn) {
+      const newHintBtn = hintBtn.cloneNode(true);
+      hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
+      newHintBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showHint();
+      });
+    }
+    
+    if (giveupBtn) {
+      const newGiveupBtn = giveupBtn.cloneNode(true);
+      giveupBtn.parentNode.replaceChild(newGiveupBtn, giveupBtn);
+      newGiveupBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        giveUp();
+      });
+    }
+    
+    if (newBtn) {
+      const newNewBtn = newBtn.cloneNode(true);
+      newBtn.parentNode.replaceChild(newNewBtn, newBtn);
+      newNewBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        loadNewChallenge();
+      });
+    }
+  }
+
+  // Initialize
+  window.addEventListener('DOMContentLoaded', () => {
+    loadNewChallenge();
+    setupEventListeners();
+  });
+  
+  // Expose functions (fallback)
+  window.runCode = runCode;
+  window.showHint = showHint;
+  window.giveUp = giveUp;
+  window.loadNewChallenge = loadNewChallenge;
+  window.closeModal = closeModal;
+  window.closeAnswerModal = closeAnswerModal;
 </script>
 </body>
 </html>
